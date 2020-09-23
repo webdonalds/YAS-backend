@@ -6,5 +6,9 @@ node_modules
 package-lock.json
 
 
-#configuration file
+# configuration file
 config.json
+
+
+# compiled folder
+dist
