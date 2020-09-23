@@ -1,0 +1,10 @@
+# modules
+node_modules
+
+
+# package-lock
+package-lock.json
+
+
+#configuration file
+config.json
