@@ -24,12 +24,24 @@ const sequelize = new Sequelize(
 )
 
 // initialize models
-let models = [ User, Video, Tag, Follow, Like, VideoHasTag ]
+let models = [ User, Video, Tag, Like, Follow ]
 models.forEach(model => model.initialize(sequelize))
 
 
-// TODO : define relations between tables - ex) Video has many tags;
+// User - Video Association
+User.hasMany(Video, {foreignKey: 'userId'});
 
+// Follow Association
+User.hasMany(Follow, {foreignKey: 'userId', as: 'followerId'});
+User.hasMany(Follow, {foreignKey: 'userId', as: 'followeeId'});
+
+// Like Association
+User.hasMany(Like, {foreignKey: 'userId'});
+Video.hasMany(Like, {foreignKey: 'videoId'});
+
+// video has tag Association
+Video.belongsToMany(Tag, {through: 'video_has_tag'});
+Tag.belongsToMany(Video, {through: 'video_has_tag'});
 
 export {
     sequelize as Database,
