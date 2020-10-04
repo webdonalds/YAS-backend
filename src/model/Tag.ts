@@ -7,11 +7,6 @@ class Tag extends Model {
     public static initialize(sequelize: Sequelize) {
         this.init(
             {
-                tagId: {
-                    type: DataTypes.INTEGER,
-                    autoIncrement: true,
-                    primaryKey: true
-                },
                 tagName: {
                     type: DataTypes.STRING(100),
                     allowNull: false,

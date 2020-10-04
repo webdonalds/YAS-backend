@@ -5,8 +5,8 @@ import { Database } from './model/index';
 let app:express = express();
 
 // give 'force' option for reinitializing DB
-// Database.sync({force:true});
-Database.sync();
+Database.sync({force:true});
+
 
 // add router
 app.use(require('./api/index'));
