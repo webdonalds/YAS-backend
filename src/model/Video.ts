@@ -2,7 +2,7 @@ import { Sequelize, Model, DataTypes } from 'sequelize';
 
 class Video extends Model {
     public id!: number;
-    public videoId!: number; 
+    public videoId!: string; 
     public userId!: number;
     public title!: string;
     public description: string;
