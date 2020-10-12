@@ -1,4 +1,4 @@
-import { Sequelize, Model, DataTypes } from "sequelize";
+import { Sequelize, Model, DataTypes } from 'sequelize';
 
 class Like extends Model {
     public userId!: number; 
@@ -17,10 +17,10 @@ class Like extends Model {
                 }
             },
             {
-                tableName: "likes",
+                tableName: 'likes',
                 sequelize
             }
-        )
+        );
     }
 }
 

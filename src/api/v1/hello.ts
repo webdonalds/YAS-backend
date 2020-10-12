@@ -4,14 +4,10 @@ const router = express.Router();
 
 
 router.get('/hello', (request: express.Request, response: express.Response) => {
-    response.send("hello");
+    response.send('hello');
 });
 
 
 
-
-
-
-
-module.exports = router;
+export default router;
 

@@ -1,4 +1,4 @@
-import { Options, Sequelize } from 'sequelize'
+import { Sequelize } from 'sequelize';
 
 // import models
 import User from './User';
@@ -17,13 +17,13 @@ const sequelize = new Sequelize(
     config.database.databasePassword,
     {
         host: config.database.databaseEndpoint,
-        dialect: "mariadb"
+        dialect: 'mariadb'
     }
-)
+);
 
 // initialize models
-let models = [ User, Video, Tag, Like ]
-models.forEach(model => model.initialize(sequelize))
+const models = [ User, Video, Tag, Like ];
+models.forEach(model => model.initialize(sequelize));
 
 
 // User - Video Association
@@ -47,4 +47,4 @@ Tag.belongsToMany(Video, {through: 'video_has_tag', foreignKey: 'tagId'});
 export {
     sequelize as Database,
     User, Video, Tag, Like
-}
+};

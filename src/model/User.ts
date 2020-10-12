@@ -1,4 +1,4 @@
-import { Sequelize, Model, DataTypes } from "sequelize";
+import { Sequelize, Model, DataTypes } from 'sequelize';
 
 class User extends Model {
     public id!: number;
@@ -34,19 +34,19 @@ class User extends Model {
                     unique: true
                 },
                 imagePath: {
-                    type: DataTypes.STRING(150),
+                    type: DataTypes.STRING,
                     allowNull: true
                 },
                 aboutMe: {
-                    type: DataTypes.STRING(200),
+                    type: DataTypes.STRING,
                     allowNull: true
                 }
             },
             {
-                tableName: "users",
+                tableName: 'users',
                 sequelize
             }
-        )
+        );
     }
 }
 

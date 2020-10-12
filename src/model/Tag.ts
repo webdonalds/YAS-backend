@@ -1,4 +1,4 @@
-import { Sequelize, Model, DataTypes } from "sequelize";
+import { Sequelize, Model, DataTypes } from 'sequelize';
 
 class Tag extends Model {
     public tagId!: number; 
@@ -8,16 +8,16 @@ class Tag extends Model {
         this.init(
             {
                 tagName: {
-                    type: DataTypes.STRING(100),
+                    type: DataTypes.STRING(20),
                     allowNull: false,
                     unique: true
                 }
             },
             {
-                tableName: "tags",
+                tableName: 'tags',
                 sequelize
             }
-        )
+        );
     }
 }
 

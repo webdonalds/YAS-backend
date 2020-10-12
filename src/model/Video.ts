@@ -1,4 +1,4 @@
-import { Sequelize, Model, DataTypes } from "sequelize";
+import { Sequelize, Model, DataTypes } from 'sequelize';
 
 class Video extends Model {
     public id!: number;
@@ -18,7 +18,7 @@ class Video extends Model {
                     allowNull: false
                 },
                 videoId: {
-                    type: DataTypes.INTEGER,
+                    type: DataTypes.STRING,
                     allowNull: false
                 },
                 userId: {
@@ -26,7 +26,7 @@ class Video extends Model {
                     allowNull: false
                 },
                 title: {
-                    type: DataTypes.STRING,
+                    type: DataTypes.STRING(100),
                     allowNull: false
                 },
                 description: {
@@ -35,10 +35,10 @@ class Video extends Model {
                 }
             },
             {
-                tableName: "videos",
+                tableName: 'videos',
                 sequelize
             }
-        )
+        );
     }
 }
 
