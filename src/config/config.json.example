@@ -1,4 +1,8 @@
-module.exports = {
-    s3Url: 'HOST',
-    databaseEndpoint: 'Endpoint'
-};
+{
+    "databaseName": "DATABASE_NAME",
+    "databaseID": "DATABASE_ID",
+    "databasePassword": "DATABASE_PASSWORD",
+    "databaseEndpoint": "DATABASE_ENDPOINT",
+    "s3Bucket": "S3_BUCKET_NAME",
+    "s3Endpoint": "S3_BUCKET_URL"
+}
