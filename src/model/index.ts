@@ -9,7 +9,6 @@ import Like from './Like';
 // import config
 import * as config from '../config/config.json';
 
-console.log(config);
 
 const sequelize = new Sequelize(
     config.database.databaseName,
