@@ -24,6 +24,11 @@ class GoogleService{
             scope: scopes
         });
     }
+
+    async getTokens(code) {
+        const {tokens} = await this.oauth2Client.getToken(code);
+        return tokens;
+    }
 }
 
 
