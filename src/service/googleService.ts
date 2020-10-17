@@ -35,12 +35,18 @@ class GoogleService{
         this.oauth2Client.setCredentials({
             access_token: accessToken
         });
-        
+
         const response = await google.oauth2('v2').userinfo.get({
             auth: this.oauth2Client
         });
 
-        return response.data;
+        const userInfo = {
+            email: response.data.email,
+            id: response.data.id,
+            verified: response.data.verified_email
+        };
+
+        return userInfo; 
     }
 }
 

@@ -1,8 +1,12 @@
 import * as express from 'express';
 import axios from 'axios';
+import { stringify } from 'querystring';
 import googleService from '../../service/googleService';
 
+import { User } from '../../model/index';
+
 import * as config from '../../config/config.json';
+
 
 const router = express.Router();
 
@@ -24,13 +28,32 @@ router.get('/try-login', async (request: express.Request, response: express.Resp
         next(error);
     }
     
-    // TODO : Get user information (email) from google apip
-    const email:string = '';
+    // if no access_token is returned, then something went wrong
+    if(!('access_token' in tokens)){
+        //TODO : Handle error response
+        response.send('no access token found');
+    }
 
+    const userInfo = await googleService.getUserInfo(tokens.access_token);
+    const email:string = userInfo.email;
 
+    // TODO : Change redirect URL to registerUrl
+    const registerUrl = 'http://127.0.0.1/';
+
+    
     if('refresh_token' in tokens){
-        //TODO : DB에 refresh_token, email을 저장
-        // 이후 email 정보와 함께 regitser page로 redirect
+        await User.create({
+            email: email,
+            refreshToken: tokens.refresh_token,
+            registered: false
+        });
+
+        const params = stringify({
+            email: email,
+            access_token: tokens.access_token
+        });
+        
+        response.redirect(registerUrl + '?' + params);
 
     } else if (!('refresh_token' in tokens)){
         //TODO : case 별로 request처리하기
