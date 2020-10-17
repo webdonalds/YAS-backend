@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { gmail } from 'googleapis/build/src/apis/gmail';
 
 import * as config from '../config/config.json';
 
@@ -28,6 +29,18 @@ class GoogleService{
     async getTokens(code) {
         const {tokens} = await this.oauth2Client.getToken(code);
         return tokens;
+    }
+
+    async getUserInfo(accessToken) {
+        this.oauth2Client.setCredentials({
+            access_token: accessToken
+        });
+        
+        const response = await google.oauth2('v2').userinfo.get({
+            auth: this.oauth2Client
+        });
+
+        return response.data;
     }
 }
 
