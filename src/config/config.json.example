@@ -1,8 +1,25 @@
 {
-    "databaseName": "DATABASE_NAME",
-    "databaseID": "DATABASE_ID",
-    "databasePassword": "DATABASE_PASSWORD",
-    "databaseEndpoint": "DATABASE_ENDPOINT",
     "s3Bucket": "S3_BUCKET_NAME",
-    "s3Endpoint": "S3_BUCKET_URL"
+    "s3Endpoint": "S3_BUCKET_URL",
+    "database": {
+        "databaseName": "DB_NAME",
+        "databaseId": "DB_ID",
+        "databasePassword": "DB_PW",
+        "databaseEndpoint": "DB_HOST"
+    },
+    "oauth2": {
+        "web": {
+            "client_id":"CLI_ID,
+            "project_id":"PROJECT",
+            "auth_uri":"URI",
+            "token_uri":"URI",
+            "auth_provider_x509_cert_url":"CERT_URL",
+            "client_secret":"SECRET"
+        },
+        "redirectUri": "REDIRECTURL",
+        "scopes": [
+            "SCOPE1",
+            "SCOPE2"
+        ]
+    }
 }
