@@ -4,7 +4,7 @@
   "description": "project YAS backend",
   "main": "app.js",
   "scripts": {
-    "test": "tsc && node dist/app.js"
+    "test": "eslint --fix . && tsc && node dist/app.js"
   },
   "author": "hywook4",
   "license": "ISC",
