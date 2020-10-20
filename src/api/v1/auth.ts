@@ -1,11 +1,9 @@
 import * as express from 'express';
-import axios from 'axios';
 import { stringify } from 'querystring';
 import googleService from '../../service/googleService';
 
 import { User } from '../../model/index';
 
-import * as config from '../../config/config.json';
 
 
 const router = express.Router();
@@ -18,66 +16,91 @@ router.get('/authentication-url', (request: express.Request, response: express.R
 });
 
 
-router.get('/try-login', async (request: express.Request, response: express.Response, next) => {
+router.get('/auth', async (request: express.Request, response: express.Response, next) => {
     const code:string = request.query.code;
-    let tokens;
+
+    if(code==null){
+        response.status(400).json({
+            error:{
+                message: 'Need code parameter'
+            }
+        });
+        return;
+    }
+    
+    let googleTokens;
+
     try{
-        tokens = await googleService.getTokens(code);
+        googleTokens = await googleService.getTokens(code);
     } catch(error){
         //TODO : Add exception handling for router async error
-        next(error);
+        response.status(401).json({
+            error:{
+                message : 'Invalid code value',
+                specific : error
+            }
+        });
+        return;
     }
     
     // if no access_token is returned, then something went wrong
-    if(!('access_token' in tokens)){
-        //TODO : Handle error response
-        response.send('no access token found');
+    if(!('access_token' in googleTokens)){
+        response.status(409).json({
+            error:{
+                message : 'Google Api has not returned access_token!',
+                code : 410
+            }
+        });
+        return;
     }
 
-    const userInfo = await googleService.getUserInfo(tokens.access_token);
+    const userInfo = await googleService.getUserInfo(googleTokens.access_token);
     const email:string = userInfo.email;
 
-    // TODO : Change redirect URL to registerUrl
-    const registerUrl = 'http://127.0.0.1/';
 
-
-    if('refresh_token' in tokens){
+    if('refresh_token' in googleTokens){
         await User.create({
             email: email,
-            refreshToken: tokens.refresh_token,
+            refreshToken: googleTokens.refresh_token,
             registered: false
         });
 
-        const params = stringify({
+        response.json({
             email: email,
-            access_token: tokens.access_token
+            registered: false
         });
-        
-        response.redirect(registerUrl + '?' + params);
 
+        return;
     } 
-    else if (!('refresh_token' in tokens)){
+    else {
         const result = await User.findOne({
             where: {email: email},
             attributes: ['email', 'refreshToken', 'registered']
         });
 
         if(result == null){
-            // TODO : 해당 경우에 대한 처리
-            response.send('Need to erase our app from your google account');
+            response.status(409).json({
+                error:{
+                    message : 'Need to erase access grant for our app at Google acount setting',
+                    code : 411
+                }
+            });
+            return;
         }
         
         if(result.registered){
-            // TODO : Switch redirect url to homepage or some login success page
-            response.redirect('http://127.0.0.1/?page=loginsuccess');
+            // TODO : send our token.
+            
+
+            return;
         }
         else{
-            const params = stringify({
+            response.json({
                 email: email,
-                access_token: tokens.access_token
+                registered: false
             });
-            
-            response.redirect(registerUrl + '?' + params);
+    
+            return;
         }
     }
 });
