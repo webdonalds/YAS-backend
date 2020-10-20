@@ -11,7 +11,7 @@ import * as config from '../../config/config.json';
 const router = express.Router();
 
 
-router.get('/get-authentication-url', (request: express.Request, response: express.Response) => {
+router.get('/authentication-url', (request: express.Request, response: express.Response) => {
     response.json({
         oauth2Url: googleService.getAuthUrl()
     });
