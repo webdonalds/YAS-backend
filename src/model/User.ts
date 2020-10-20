@@ -47,6 +47,22 @@ class User extends Model {
                     type: DataTypes.STRING,
                     allowNull: false
                 },
+                yasToken: {
+                    type: DataTypes.STRING,
+                    allowNull: true
+                },
+                secretKey: {
+                    type: DataTypes.STRING,
+                    allowNull: true
+                },
+                googleAccessToken: {
+                    type: DataTypes.STRING,
+                    allowNull: true
+                },
+                googleTokenExpireTime: {
+                    type: DataTypes.BIGINT,
+                    allowNull: true
+                },
                 registered: {
                     type: DataTypes.BOOLEAN,
                     allowNull: false
