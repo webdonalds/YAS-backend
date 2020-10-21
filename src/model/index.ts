@@ -50,5 +50,5 @@ Tag.belongsToMany(Video, {through: 'video_has_tag', foreignKey: 'tagId'});
 
 export {
     sequelize as Database,
-    User, Video, Tag, Like
+    User, Video, Tag, Like, Token
 };

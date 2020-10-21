@@ -1,8 +1,8 @@
 import * as express from 'express';
-import { stringify } from 'querystring';
 import googleService from '../../service/googleService';
+import tokenService from '../../service/tokenService';
 
-import { User } from '../../model/index';
+import { User, Token } from '../../model/index';
 
 
 
@@ -19,6 +19,7 @@ router.get('/authentication-url', (request: express.Request, response: express.R
 router.get('/auth', async (request: express.Request, response: express.Response, next) => {
     const code:string = request.query.code;
 
+    // when no code is returned
     if(code==null){
         response.status(400).json({
             error:{
@@ -30,10 +31,10 @@ router.get('/auth', async (request: express.Request, response: express.Response,
     
     let googleTokens;
 
+    // check code validation
     try{
         googleTokens = await googleService.getTokens(code);
     } catch(error){
-        //TODO : Add exception handling for router async error
         response.status(401).json({
             error:{
                 message : 'Invalid code value',
@@ -55,18 +56,19 @@ router.get('/auth', async (request: express.Request, response: express.Response,
     }
 
     const userInfo = await googleService.getUserInfo(googleTokens.access_token);
-    const email:string = userInfo.email;
 
 
+    // if refresh_token exists, it's new user
     if('refresh_token' in googleTokens){
         await User.create({
-            email: email,
+            userId: userInfo.id,
+            email: userInfo.email,
             refreshToken: googleTokens.refresh_token,
             registered: false
         });
 
         response.json({
-            email: email,
+            email: userInfo.email,
             registered: false
         });
 
@@ -74,8 +76,7 @@ router.get('/auth', async (request: express.Request, response: express.Response,
     } 
     else {
         const result = await User.findOne({
-            where: {email: email},
-            attributes: ['email', 'refreshToken', 'registered']
+            where: {email: userInfo.email}
         });
 
         if(result == null){
@@ -88,15 +89,39 @@ router.get('/auth', async (request: express.Request, response: express.Response,
             return;
         }
         
+        // when it's registered user
         if(result.registered){
-            // TODO : send our token.
+            const data = {
+                id: result.id,
+                email: result.email,
+                nickname: result.nickname,
+                imagePath: result.imagePath,
+                aboutMe: result.aboutMe,
+            };
             
+            const auth = {
+                yasToken: tokenService.makeYasToken(),
+                yasSecretKey: tokenService.makeYasSecretKey()
+            };
+            
+            await Token.create({
+                userId: result.id,
+                yasToken: auth.yasToken,
+                yasSecretKey: auth.yasSecretKey
+            });
+
+            response.json({
+                data: data,
+                auth: auth,
+                registered: true
+            });
 
             return;
         }
+        // if not registered
         else{
             response.json({
-                email: email,
+                email: userInfo.email,
                 registered: false
             });
     
@@ -104,7 +129,6 @@ router.get('/auth', async (request: express.Request, response: express.Response,
         }
     }
 });
-
 
 export default router;
 
