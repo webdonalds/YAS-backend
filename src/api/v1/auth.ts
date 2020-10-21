@@ -23,7 +23,8 @@ router.get('/auth', async (request: express.Request, response: express.Response,
     if(code==null){
         response.status(400).json({
             error:{
-                message: 'Need code parameter'
+                message: 'Lack of parameter : code',
+                code: '400'
             }
         });
         return;
@@ -38,7 +39,8 @@ router.get('/auth', async (request: express.Request, response: express.Response,
         response.status(401).json({
             error:{
                 message : 'Invalid code value',
-                specific : error
+                specific : error,
+                code: '401'
             }
         });
         return;
@@ -46,10 +48,10 @@ router.get('/auth', async (request: express.Request, response: express.Response,
     
     // if no access_token is returned, then something went wrong
     if(!('access_token' in googleTokens)){
-        response.status(409).json({
+        response.status(401).json({
             error:{
-                message : 'Google Api has not returned access_token!',
-                code : 410
+                message : 'Invalid code value : access_token not returned',
+                code : 401
             }
         });
         return;
@@ -80,10 +82,10 @@ router.get('/auth', async (request: express.Request, response: express.Response,
         });
 
         if(result == null){
-            response.status(409).json({
+            response.status(404).json({
                 error:{
-                    message : 'Need to erase access grant for our app at Google acount setting',
-                    code : 411
+                    message : 'user not found : please reset Google OAUTH2 for out app',
+                    code : 404
                 }
             });
             return;
