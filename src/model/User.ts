@@ -22,7 +22,7 @@ class User extends Model {
                 },
                 userId: {
                     type: DataTypes.INTEGER,
-                    allowNull: true,
+                    allowNull: false,
                     unique: true
                 },
                 nickname: {
@@ -46,14 +46,6 @@ class User extends Model {
                 refreshToken: {
                     type: DataTypes.STRING,
                     allowNull: false
-                },
-                yasToken: {
-                    type: DataTypes.STRING,
-                    allowNull: true
-                },
-                secretKey: {
-                    type: DataTypes.STRING,
-                    allowNull: true
                 },
                 googleAccessToken: {
                     type: DataTypes.STRING,
