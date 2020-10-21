@@ -12,6 +12,7 @@
     "axios": "^0.20.0",
     "express": "^4.17.1",
     "googleapis": "^61.0.0",
+    "jsonwebtoken": "^8.5.1",
     "mariadb": "^2.4.2",
     "sequelize": "^6.3.5"
   },
