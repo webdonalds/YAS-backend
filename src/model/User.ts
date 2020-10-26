@@ -43,7 +43,7 @@ class User extends Model {
                     type: DataTypes.STRING,
                     allowNull: true
                 },
-                refreshToken: {
+                googleRefreshToken: {
                     type: DataTypes.STRING,
                     allowNull: false
                 },

@@ -10,8 +10,10 @@ function makeYasToken(size = 40):string{
     return crypto.randomBytes(size).toString('hex');
 }
 
+const expireTime = 3600;
 
 export default {
     makeYasSecretKey,
-    makeYasToken
+    makeYasToken,
+    expireTime
 };

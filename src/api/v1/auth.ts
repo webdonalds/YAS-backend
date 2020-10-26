@@ -16,15 +16,15 @@ router.get('/authentication-url', (request: express.Request, response: express.R
 });
 
 
-router.get('/auth', async (request: express.Request, response: express.Response, next) => {
+router.get('/auth', async (request: express.Request, response: express.Response) => {
     const code:string = request.query.code;
 
     // when no code is returned
     if(code==null){
         response.status(400).json({
             error:{
-                message: 'Lack of parameter : code',
-                code: '400'
+                message : 'Lack of parameter : code',
+                code : 400
             }
         });
         return;
@@ -40,7 +40,7 @@ router.get('/auth', async (request: express.Request, response: express.Response,
             error:{
                 message : 'Invalid code value',
                 specific : error,
-                code: '401'
+                code : 401
             }
         });
         return;
@@ -60,38 +60,52 @@ router.get('/auth', async (request: express.Request, response: express.Response,
     const userInfo = await googleService.getUserInfo(googleTokens.access_token);
 
 
-    // if refresh_token exists, it's new user
-    if('refresh_token' in googleTokens){
-        await User.create({
-            userId: userInfo.id,
-            email: userInfo.email,
-            refreshToken: googleTokens.refresh_token,
-            registered: false
-        });
+    const result = await User.findOne({
+        where: {email: userInfo.email}
+    });
 
-        response.json({
-            email: userInfo.email,
-            registered: false
-        });
 
-        return;
-    } 
-    else {
-        const result = await User.findOne({
-            where: {email: userInfo.email}
-        });
-
-        if(result == null){
+    if(result == null){
+        if(!('refresh_token' in googleTokens)){
             response.status(404).json({
                 error:{
                     message : 'user not found : please reset Google OAUTH2 for out app',
                     code : 404
                 }
             });
+
+            return;
+        } 
+        else{
+            await User.create({
+                userId: userInfo.id,
+                email: userInfo.email,
+                googleRefreshToken: googleTokens.refresh_token,
+                registered: false
+            });
+    
+            response.json({
+                email: userInfo.email,
+                registered: false
+            });
+
             return;
         }
-        
-        // when it's registered user
+
+    }
+    else{
+        // if new refresh_token is given, update to new one
+        if('refresh_token' in googleTokens){
+            await User.update({
+                googleRefreshToken: googleTokens.refresh_token
+            },
+            {
+                where:{
+                    email: userInfo.email
+                }
+            });
+        }
+
         if(result.registered){
             const data = {
                 id: result.id,
@@ -103,7 +117,8 @@ router.get('/auth', async (request: express.Request, response: express.Response,
             
             const auth = {
                 yasToken: tokenService.makeYasToken(),
-                yasSecretKey: tokenService.makeYasSecretKey()
+                yasSecretKey: tokenService.makeYasSecretKey(),
+                expireTime: tokenService.expireTime
             };
             
             await Token.create({
@@ -120,7 +135,6 @@ router.get('/auth', async (request: express.Request, response: express.Response,
 
             return;
         }
-        // if not registered
         else{
             response.json({
                 email: userInfo.email,
