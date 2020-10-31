@@ -54,10 +54,6 @@ class User extends Model {
                 googleTokenExpireTime: {
                     type: DataTypes.BIGINT,
                     allowNull: true
-                },
-                registered: {
-                    type: DataTypes.BOOLEAN,
-                    allowNull: false
                 }
             },
             {
