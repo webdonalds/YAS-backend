@@ -71,12 +71,10 @@ router.get('/auth', async (request: express.Request, response: express.Response)
                 userId: userInfo.id,
                 email: userInfo.email,
                 googleRefreshToken: googleTokens.refresh_token,
-                registered: false
             });
     
             response.json({
                 email: userInfo.email,
-                registered: false
             });
 
             return;
@@ -96,43 +94,32 @@ router.get('/auth', async (request: express.Request, response: express.Response)
             });
         }
 
-        if(result.registered){
-            const data = {
-                id: result.id,
-                email: result.email,
-                nickname: result.nickname,
-                imagePath: result.imagePath,
-                aboutMe: result.aboutMe,
-            };
-            
-            const auth = {
-                yasToken: tokenService.makeYasToken(),
-                yasSecretKey: tokenService.makeYasSecretKey(),
-                expireTime: tokenService.expireTime
-            };
-            
-            await Token.create({
-                userId: result.id,
-                yasToken: auth.yasToken,
-                yasSecretKey: auth.yasSecretKey
-            });
+        const data = {
+            id: result.id,
+            email: result.email,
+            nickname: result.nickname,
+            imagePath: result.imagePath,
+            aboutMe: result.aboutMe,
+        };
+        
+        const auth = {
+            yasToken: tokenService.makeYasToken(),
+            yasSecretKey: tokenService.makeYasSecretKey(),
+            expireTime: tokenService.expireTime
+        };
+        
+        await Token.create({
+            userId: result.id,
+            yasToken: auth.yasToken,
+            yasSecretKey: auth.yasSecretKey
+        });
 
-            response.json({
-                data: data,
-                auth: auth,
-                registered: true
-            });
+        response.json({
+            data: data,
+            auth: auth,
+        });
 
-            return;
-        }
-        else{
-            response.json({
-                email: userInfo.email,
-                registered: false
-            });
-    
-            return;
-        }
+        return;
     }
 });
 
