@@ -60,7 +60,7 @@ router.get('/auth', async (request: express.Request, response: express.Response)
     const userInfo = await googleService.getUserInfo(googleTokens.access_token);
 
 
-    const result = await User.findOne({
+    let result = await User.findOne({
         where: {email: userInfo.email}
     });
 
@@ -80,16 +80,14 @@ router.get('/auth', async (request: express.Request, response: express.Response)
             await User.create({
                 userId: userInfo.id,
                 email: userInfo.email,
+                nickname: userInfo.email.split('@')[0],
                 googleRefreshToken: googleTokens.refresh_token,
             });
-    
-            response.json({
-                email: userInfo.email,
+
+            result = await User.findOne({
+                where: {email: userInfo.email}
             });
-
-            return;
         }
-
     }
     else{
         // if new refresh_token is given, update to new one
@@ -103,34 +101,34 @@ router.get('/auth', async (request: express.Request, response: express.Response)
                 }
             });
         }
-
-        const data = {
-            id: result.id,
-            email: result.email,
-            nickname: result.nickname,
-            imagePath: result.imagePath,
-            aboutMe: result.aboutMe,
-        };
-        
-        const auth = {
-            yasToken: tokenService.makeYasToken(),
-            yasSecretKey: tokenService.makeYasSecretKey(),
-            expireTime: tokenService.expireTime
-        };
-        
-        await Token.create({
-            userId: result.id,
-            yasToken: auth.yasToken,
-            yasSecretKey: auth.yasSecretKey
-        });
-
-        response.json({
-            data: data,
-            auth: auth,
-        });
-
-        return;
     }
+
+    const data = {
+        id: result.id,
+        email: result.email,
+        nickname: result.nickname,
+        imagePath: result.imagePath,
+        aboutMe: result.aboutMe,
+    };
+    
+    const auth = {
+        yasToken: tokenService.makeYasToken(),
+        yasSecretKey: tokenService.makeYasSecretKey(),
+        expireTime: tokenService.expireTime
+    };
+    
+    await Token.create({
+        userId: result.id,
+        yasToken: auth.yasToken,
+        yasSecretKey: auth.yasSecretKey
+    });
+
+    response.json({
+        data: data,
+        auth: auth,
+    });
+
+    return;
 });
 
 export default router;
