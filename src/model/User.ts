@@ -7,6 +7,8 @@ class User extends Model {
     public email!: string;
     public imagePath: string;
     public aboutMe: string;
+    public refreshToken: string;
+    public registered: boolean;
 
 
     public static initialize(sequelize: Sequelize) {
@@ -25,7 +27,7 @@ class User extends Model {
                 },
                 nickname: {
                     type: DataTypes.STRING(50),
-                    allowNull: false,
+                    allowNull: true,
                     unique: true
                 },
                 email: {
@@ -40,6 +42,22 @@ class User extends Model {
                 aboutMe: {
                     type: DataTypes.STRING,
                     allowNull: true
+                },
+                googleRefreshToken: {
+                    type: DataTypes.STRING,
+                    allowNull: false
+                },
+                googleAccessToken: {
+                    type: DataTypes.STRING,
+                    allowNull: true
+                },
+                googleTokenExpireTime: {
+                    type: DataTypes.BIGINT,
+                    allowNull: true
+                },
+                registered: {
+                    type: DataTypes.BOOLEAN,
+                    allowNull: false
                 }
             },
             {

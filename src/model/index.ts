@@ -5,11 +5,11 @@ import User from './User';
 import Video from './Video';
 import Tag from './Tag';
 import Like from './Like';
+import Token from './Token';
 
 // import config
 import * as config from '../config/config.json';
 
-console.log(config);
 
 const sequelize = new Sequelize(
     config.database.databaseName,
@@ -22,12 +22,16 @@ const sequelize = new Sequelize(
 );
 
 // initialize models
-const models = [ User, Video, Tag, Like ];
+const models = [ User, Video, Tag, Like, Token ];
 models.forEach(model => model.initialize(sequelize));
 
 
 // User - Video Association
 User.hasMany(Video, {foreignKey: 'userId'});
+
+
+// User - Token Association
+User.hasMany(Token, {foreignKey: 'userId'});
 
 
 // Follow Association
@@ -46,5 +50,5 @@ Tag.belongsToMany(Video, {through: 'video_has_tag', foreignKey: 'tagId'});
 
 export {
     sequelize as Database,
-    User, Video, Tag, Like
+    User, Video, Tag, Like, Token
 };
