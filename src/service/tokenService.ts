@@ -10,10 +10,41 @@ function makeYasToken(size = 40):string{
     return crypto.randomBytes(size).toString('hex');
 }
 
+function extractPayloadFromToken(encryptedToken:string):string{
+    let ret = null;
+    try{
+        const payload = jwt.decode(encryptedToken);
+        ret = payload.yasToken;
+    } catch(err){
+        console.log(err.message);
+    }
+
+    return ret;
+}
+
+function verifyToken(encryptedToken:string, secret:string):number{
+    try{
+        jwt.verify(encryptedToken, secret);
+        return TOKEN_VALID;
+    } catch(err){
+        // TODO : check expired token
+        return TOKEN_INVALID;
+    }
+}
+
+const TOKEN_EXPIRED = -1;
+const TOKEN_INVALID = 0;
+const TOKEN_VALID = 1;
+
 const expireTime = 3600;
 
 export default {
     makeYasSecretKey,
     makeYasToken,
-    expireTime
+    expireTime,
+    extractPayloadFromToken,
+    verifyToken,
+    TOKEN_EXPIRED,
+    TOKEN_INVALID,
+    TOKEN_VALID
 };
