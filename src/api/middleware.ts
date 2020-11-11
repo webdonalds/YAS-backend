@@ -5,15 +5,15 @@ import { Token } from '../model/index';
 
 const validateToken = async (request: express.Request, response: express.Response, next) => {
     //TODO : Token will be given as header -> Authorization : Bearer token
-    const encryptedToken:string = (request.headers['x-access-token'] || request.query.token) as string;
+    const encryptedToken: string = (request.headers['x-access-token'] || request.query.token) as string;
 
-    
+
     // if token does not exist
-    if(!encryptedToken) {
+    if (!encryptedToken) {
         response.status(403).json({
-            error:{
-                message : 'no_token',
-                code : 403
+            error: {
+                message: 'no_token',
+                code: 403
             }
         });
         return;
@@ -21,27 +21,27 @@ const validateToken = async (request: express.Request, response: express.Respons
 
     const yasToken = tokenService.extractPayloadFromToken(encryptedToken);
 
-    if(yasToken==null){
+    if (yasToken == null) {
         response.status(401).json({
-            error:{
+            error: {
                 message: 'invalid_token',
-                code : 401
+                code: 401
             }
         });
         return;
     }
 
-    
+
     const result = await Token.findOne({
         where: { yasToken: yasToken }
     });
 
     // no token found from database
-    if(result==null){
+    if (result == null) {
         response.status(401).json({
-            error:{
+            error: {
                 message: 'invalid_token',
-                code : 401
+                code: 401
             }
         });
         return;
@@ -49,27 +49,27 @@ const validateToken = async (request: express.Request, response: express.Respons
 
     const validity = tokenService.verifyToken(encryptedToken, result.yasSecretKey);
 
-    if(validity == tokenService.TOKEN_VALID){
+    if (validity == tokenService.TOKEN_VALID) {
         request.body.userInfo = {
             userId: result.userId
         };
         next();
     }
-    else if(validity == tokenService.TOKEN_INVALID){
+    else if (validity == tokenService.TOKEN_INVALID) {
         response.status(401).json({
-            error:{
+            error: {
                 message: 'invalid_token',
-                code : 401
+                code: 401
             }
         });
         return;
     }
-    else if(validity == tokenService.TOKEN_EXPIRED){
+    else if (validity == tokenService.TOKEN_EXPIRED) {
 
         response.status(405).json({
-            error:{
+            error: {
                 message: 'token_expired',
-                code : 405
+                code: 405
             }
         });
         // TODO : erase expired token

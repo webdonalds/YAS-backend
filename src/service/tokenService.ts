@@ -2,32 +2,32 @@ import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
 
 
-function makeYasSecretKey(size = 50):string{
+function makeYasSecretKey(size = 50): string {
     return crypto.randomBytes(size).toString('hex');
 }
 
-function makeYasToken(size = 40):string{
+function makeYasToken(size = 40): string {
     return crypto.randomBytes(size).toString('hex');
 }
 
-function extractPayloadFromToken(encryptedToken:string):string{
+function extractPayloadFromToken(encryptedToken: string): string {
     let ret = null;
-    try{
+    try {
         const payload = jwt.decode(encryptedToken);
         ret = payload.yasToken;
-    } catch(err){
+    } catch (err) {
         console.log(err.message);
     }
 
     return ret;
 }
 
-function verifyToken(encryptedToken:string, secret:string):number{
-    try{
+function verifyToken(encryptedToken: string, secret: string): number {
+    try {
         jwt.verify(encryptedToken, secret);
         return TOKEN_VALID;
-    } catch(err){
-        if(err.message=='jwt expired'){
+    } catch (err) {
+        if (err.message == 'jwt expired') {
             return TOKEN_EXPIRED;
         }
         return TOKEN_INVALID;

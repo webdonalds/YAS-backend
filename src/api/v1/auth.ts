@@ -7,41 +7,41 @@ import { User, Token } from '../../model/index';
 const router = express.Router();
 
 router.get('/auth', async (request: express.Request, response: express.Response) => {
-    const code:string = request.query.code as string;
+    const code: string = request.query.code as string;
 
     // when no code is returned
-    if(code==null){
+    if (code == null) {
         response.status(400).json({
-            error:{
-                message : 'Lack of parameter : code',
-                code : 400
+            error: {
+                message: 'Lack of parameter : code',
+                code: 400
             }
         });
         return;
     }
-    
+
     let googleTokens;
 
     // check code validation
-    try{
+    try {
         googleTokens = await googleService.getTokens(code);
-    } catch(error){
+    } catch (error) {
         response.status(401).json({
-            error:{
-                message : 'Invalid code value',
-                specific : error,
-                code : 401
+            error: {
+                message: 'Invalid code value',
+                specific: error,
+                code: 401
             }
         });
         return;
     }
-    
+
     // if no access_token is returned, then something went wrong
-    if(!('access_token' in googleTokens)){
+    if (!('access_token' in googleTokens)) {
         response.status(401).json({
-            error:{
-                message : 'Invalid code value : access_token not returned',
-                code : 401
+            error: {
+                message: 'Invalid code value : access_token not returned',
+                code: 401
             }
         });
         return;
@@ -51,22 +51,22 @@ router.get('/auth', async (request: express.Request, response: express.Response)
 
 
     let result = await User.findOne({
-        where: {email: userInfo.email}
+        where: { email: userInfo.email }
     });
 
 
-    if(result == null){
-        if(!('refresh_token' in googleTokens)){
+    if (result == null) {
+        if (!('refresh_token' in googleTokens)) {
             response.status(404).json({
-                error:{
-                    message : 'user not found : please reset Google OAUTH2 for out app',
-                    code : 404
+                error: {
+                    message: 'user not found : please reset Google OAUTH2 for out app',
+                    code: 404
                 }
             });
 
             return;
-        } 
-        else{
+        }
+        else {
             await User.create({
                 userId: userInfo.id,
                 email: userInfo.email,
@@ -75,21 +75,21 @@ router.get('/auth', async (request: express.Request, response: express.Response)
             });
 
             result = await User.findOne({
-                where: {email: userInfo.email}
+                where: { email: userInfo.email }
             });
         }
     }
-    else{
+    else {
         // if new refresh_token is given, update to new one
-        if('refresh_token' in googleTokens){
+        if ('refresh_token' in googleTokens) {
             await User.update({
                 googleRefreshToken: googleTokens.refresh_token
             },
-            {
-                where:{
-                    email: userInfo.email
-                }
-            });
+                {
+                    where: {
+                        email: userInfo.email
+                    }
+                });
         }
     }
 
@@ -100,13 +100,13 @@ router.get('/auth', async (request: express.Request, response: express.Response)
         imagePath: result.imagePath,
         aboutMe: result.aboutMe,
     };
-    
+
     const auth = {
         yasToken: tokenService.makeYasToken(),
         yasSecretKey: tokenService.makeYasSecretKey(),
         expireTime: tokenService.expireTime
     };
-    
+
     await Token.create({
         userId: result.id,
         yasToken: auth.yasToken,
