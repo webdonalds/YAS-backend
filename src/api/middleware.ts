@@ -7,6 +7,7 @@ const validateToken = async (request: express.Request, response: express.Respons
     //TODO : Token will be given as header -> Authorization : Bearer token
     const encryptedToken:string = (request.headers['x-access-token'] || request.query.token) as string;
 
+    
     // if token does not exist
     if(!encryptedToken) {
         response.status(403).json({
@@ -64,6 +65,7 @@ const validateToken = async (request: express.Request, response: express.Respons
         return;
     }
     else if(validity == tokenService.TOKEN_EXPIRED){
+
         response.status(405).json({
             error:{
                 message: 'token_expired',
