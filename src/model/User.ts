@@ -21,7 +21,7 @@ class User extends Model {
                     allowNull: false
                 },
                 userId: {
-                    type: DataTypes.INTEGER,
+                    type: DataTypes.DECIMAL(30),
                     allowNull: false,
                     unique: true
                 },
