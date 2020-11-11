@@ -9,7 +9,9 @@
   "author": "hywook4",
   "license": "ISC",
   "dependencies": {
+    "@types/cors": "^2.8.8",
     "axios": "^0.20.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "googleapis": "^61.0.0",
     "jsonwebtoken": "^8.5.1",

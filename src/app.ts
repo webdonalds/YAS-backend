@@ -1,14 +1,17 @@
 import * as express from 'express';
+import * as cors from 'cors';
 import { Database } from './model/index';
 
 import index from './api/index';
 
-const app:express = express();
+const app = express();
 
 // give 'force' option for reinitializing DB
 //Database.sync({force:true});
 Database.sync();
 
+// cors
+app.use(cors());
 
 // add router
 app.use(index);
