@@ -72,7 +72,10 @@ const validateToken = async (request: express.Request, response: express.Respons
                 code: 405
             }
         });
-        // TODO : erase expired token
+
+        await Token.destroy({ 
+            where: { yasToken: yasToken } 
+        });
         return;
     }
 };
