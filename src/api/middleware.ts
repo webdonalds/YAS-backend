@@ -4,7 +4,8 @@ import tokenService from '../service/tokenService';
 import { Token } from '../model/index';
 
 const validateToken = async (request: express.Request, response: express.Response, next) => {
-    const encryptedToken = request.headers['x-access-token'] || request.query.token;
+    //TODO : Token will be given as header -> Authorization : Bearer token
+    const encryptedToken:string = (request.headers['x-access-token'] || request.query.token) as string;
 
     // if token does not exist
     if(!encryptedToken) {
