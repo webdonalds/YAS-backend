@@ -27,7 +27,9 @@ function verifyToken(encryptedToken:string, secret:string):number{
         jwt.verify(encryptedToken, secret);
         return TOKEN_VALID;
     } catch(err){
-        // TODO : check expired token
+        if(err.message=='jwt expired'){
+            return TOKEN_EXPIRED;
+        }
         return TOKEN_INVALID;
     }
 }

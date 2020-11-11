@@ -48,6 +48,9 @@ const validateToken = async (request: express.Request, response: express.Respons
     const validity = tokenService.verifyToken(encryptedToken, result.yasSecretKey);
 
     if(validity == tokenService.TOKEN_VALID){
+        request.body.userInfo = {
+            userId: result.userId
+        };
         next();
     }
     else if(validity == tokenService.TOKEN_INVALID){
@@ -59,7 +62,7 @@ const validateToken = async (request: express.Request, response: express.Respons
         });
         return;
     }
-    else{
+    else if(validity == tokenService.TOKEN_EXPIRED){
         response.status(405).json({
             error:{
                 message: 'token_expired',
