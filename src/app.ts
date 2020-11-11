@@ -14,6 +14,7 @@ Database.sync();
 app.use(cors());
 
 // add router
+app.use(express.json());
 app.use(index);
 
 
