@@ -4,20 +4,10 @@ import tokenService from '../../service/tokenService';
 
 import { User, Token } from '../../model/index';
 
-
-
 const router = express.Router();
 
-
-router.get('/authentication-url', (request: express.Request, response: express.Response) => {
-    response.json({
-        oauth2Url: googleService.getAuthUrl()
-    });
-});
-
-
 router.get('/auth', async (request: express.Request, response: express.Response) => {
-    const code:string = request.query.code;
+    const code:string = request.query.code as string;
 
     // when no code is returned
     if(code==null){

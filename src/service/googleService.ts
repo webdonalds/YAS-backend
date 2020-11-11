@@ -18,14 +18,6 @@ class GoogleService{
         
     }
 
-    // return OAuth2 code request url
-    getAuthUrl(){
-        return this.oauth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: scopes
-        });
-    }
-
     async getTokens(code) {
         const {tokens} = await this.oauth2Client.getToken(code);
         return tokens;
