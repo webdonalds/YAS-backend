@@ -82,14 +82,16 @@ router.get('/auth', async (request: express.Request, response: express.Response)
     else {
         // if new refresh_token is given, update to new one
         if ('refresh_token' in googleTokens) {
-            await User.update({
-                googleRefreshToken: googleTokens.refresh_token
-            },
+            await User.update(
+                {
+                    googleRefreshToken: googleTokens.refresh_token
+                },
                 {
                     where: {
                         email: userInfo.email
                     }
-                });
+                }
+            );
         }
     }
 

@@ -31,14 +31,16 @@ router.put('/nickname', async (request: express.Request, response: express.Respo
         return;
     }
 
-    await User.update({
-        nickname: newNickname
-    },
+    await User.update(
+        {
+            nickname: newNickname
+        },
         {
             where: {
                 id: userId
             }
-        });
+        }
+    );
 
     response.json({
         message: 'success'
@@ -74,14 +76,16 @@ router.put('/about-me', async (request: express.Request, response: express.Respo
         return;
     }
 
-    await User.update({
-        aboutMe: newAboutMe
-    },
+    await User.update(
+        {
+            aboutMe: newAboutMe
+        },
         {
             where: {
                 id: userId
             }
-        });
+        }
+    );
 
     response.json({
         message: 'success'
