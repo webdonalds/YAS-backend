@@ -1,7 +1,7 @@
 import { Sequelize, Model, DataTypes } from 'sequelize';
 
 class Tag extends Model {
-    public tagId!: number; 
+    public tagId!: number;
     public tagName!: string;
 
     public static initialize(sequelize: Sequelize) {

@@ -2,7 +2,7 @@ import { Sequelize, Model, DataTypes } from 'sequelize';
 
 class User extends Model {
     public id!: number;
-    public userId!: number; 
+    public userId!: number;
     public nickname!: string;
     public email!: string;
     public imagePath: string;
@@ -54,10 +54,6 @@ class User extends Model {
                 googleTokenExpireTime: {
                     type: DataTypes.BIGINT,
                     allowNull: true
-                },
-                registered: {
-                    type: DataTypes.BOOLEAN,
-                    allowNull: false
                 }
             },
             {

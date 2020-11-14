@@ -22,30 +22,30 @@ const sequelize = new Sequelize(
 );
 
 // initialize models
-const models = [ User, Video, Tag, Like, Token ];
+const models = [User, Video, Tag, Like, Token];
 models.forEach(model => model.initialize(sequelize));
 
 
 // User - Video Association
-User.hasMany(Video, {foreignKey: 'userId'});
+User.hasMany(Video, { foreignKey: 'userId' });
 
 
 // User - Token Association
-User.hasMany(Token, {foreignKey: 'userId'});
+User.hasMany(Token, { foreignKey: 'userId' });
 
 
 // Follow Association
-User.belongsToMany(User, {as: 'Follower', through: 'follows', foreignKey: 'followerId'});
-User.belongsToMany(User, {as: 'Followee', through: 'follows', foreignKey: 'followeeId'});
+User.belongsToMany(User, { as: 'Follower', through: 'follows', foreignKey: 'followerId' });
+User.belongsToMany(User, { as: 'Followee', through: 'follows', foreignKey: 'followeeId' });
 
 
 // Like Association
-User.hasMany(Like, {foreignKey: 'userId'});
-Video.hasMany(Like, {foreignKey: 'videoId'});
+User.hasMany(Like, { foreignKey: 'userId' });
+Video.hasMany(Like, { foreignKey: 'videoId' });
 
 // video has tag Association
-Video.belongsToMany(Tag, {through: 'video_has_tag', foreignKey: 'videoId'});
-Tag.belongsToMany(Video, {through: 'video_has_tag', foreignKey: 'tagId'});
+Video.belongsToMany(Tag, { through: 'video_has_tag', foreignKey: 'videoId' });
+Tag.belongsToMany(Video, { through: 'video_has_tag', foreignKey: 'tagId' });
 
 
 export {

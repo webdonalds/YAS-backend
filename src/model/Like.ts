@@ -1,7 +1,7 @@
 import { Sequelize, Model, DataTypes } from 'sequelize';
 
 class Like extends Model {
-    public userId!: number; 
+    public userId!: number;
     public videoId!: number;
 
     public static initialize(sequelize: Sequelize) {
