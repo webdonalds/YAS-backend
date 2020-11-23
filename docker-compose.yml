@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  app:
+    image: yas-backend:latest
+    container_name: yas-backend
+    ports:
+      - 3000:3000
+    restart: always
+    depends_on:
+      - database
+    networks:
+      - yas
+
+  database:
+    image: mariadb:10.5
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - 3306:3306
+    volumes:
+      - /data/mysql:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - yas
+
+networks:
+  yas:
