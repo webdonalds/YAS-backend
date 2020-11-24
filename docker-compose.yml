@@ -16,14 +16,20 @@ services:
     image: mariadb:10.5
     container_name: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
     ports:
       - 3306:3306
     volumes:
-      - /data/mysql:/var/lib/mysql
+      - ./db/db_init/:/docker-entrypoint-initdb.d/
     command: --default-authentication-plugin=mysql_native_password
+    secrets:
+      - mysql_root_password
     networks:
       - yas
 
 networks:
   yas:
+
+secrets:
+  mysql_root_password:
+    file: ./db/db_secret/mysql_root.secret

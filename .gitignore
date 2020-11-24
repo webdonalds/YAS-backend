@@ -12,3 +12,8 @@ config.json
 
 # compiled folder
 dist
+
+
+#sql initialize files
+*.sql
+*.secret
