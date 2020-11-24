@@ -6,10 +6,10 @@ const clientId: string = config.oauth2.web.client_id;
 const clientSecret: string = config.oauth2.web.client_secret;
 const redirectUri: string = config.oauth2.redirectUri;
 
-
+type OAuth2Client = typeof oauth2Client;
 
 class GoogleService {
-    oauth2Client;
+    oauth2Client: OAuth2Client
     constructor(oauth2Client) {
         this.oauth2Client = oauth2Client;
 
@@ -36,6 +36,14 @@ class GoogleService {
         };
 
         return userInfo;
+    }
+
+    async getAccessToken(refreshToken: string): Promise<string> {
+        this.oauth2Client.setCredentials({
+            refresh_token: refreshToken
+        });
+        const response = await oauth2Client.getAccessToken();
+        return response.token;
     }
 }
 
