@@ -1,12 +1,12 @@
 import * as express from 'express';
 import tokenService from '../service/tokenService';
 
-import { Token } from '../model/index';
+import { Token, User } from '../model/index';
+import googleService from '../service/googleService';
 
-const validateToken = async (request: express.Request, response: express.Response, next) => {
+const validateToken = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
     //TODO : Token will be given as header -> Authorization : Bearer token
     const encryptedToken: string = (request.headers['x-access-token'] || request.query.token) as string;
-
 
     // if token does not exist
     if (!encryptedToken) {
@@ -30,7 +30,6 @@ const validateToken = async (request: express.Request, response: express.Respons
         });
         return;
     }
-
 
     const result = await Token.findOne({
         where: { yasToken: yasToken }
@@ -65,7 +64,6 @@ const validateToken = async (request: express.Request, response: express.Respons
         return;
     }
     else if (validity == tokenService.TOKEN_EXPIRED) {
-
         response.status(405).json({
             error: {
                 message: 'token_expired',
@@ -80,10 +78,49 @@ const validateToken = async (request: express.Request, response: express.Respons
     }
 };
 
+const getGoogleAccessToken = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+    const userId = request.body.userInfo.userId;
+    if(!userId) {
+        response.status(403).json({
+            error: {
+                message: 'no_user_id',
+                code: 403
+            }
+        });
+        return;
+    }
 
+    const user = await User.findOne({
+        where: { id: userId }
+    });
 
+    if(user == null) {
+        response.status(404).json({
+            error: {
+                message: 'user_not_found',
+                code: 404
+            }
+        });
+        return;
+    }
 
+    try {
+        const accessToken = await googleService.getAccessToken(user.googleRefreshToken);
+        request.body.userInfo.accessToken = accessToken;
+        next();
+    } catch (e) {
+        console.log(e);
+        response.status(403).json({
+            error: {
+                message: 'google_api_error',
+                code: 410
+            }
+        });
+        return;
+    }
+};
 
 export default {
-    validateToken
+    validateToken,
+    getGoogleAccessToken
 };

@@ -7,7 +7,7 @@ class User extends Model {
     public email!: string;
     public imagePath: string;
     public aboutMe: string;
-    public refreshToken: string;
+    public googleRefreshToken: string;
     public registered: boolean;
 
 
@@ -46,14 +46,6 @@ class User extends Model {
                 googleRefreshToken: {
                     type: DataTypes.STRING,
                     allowNull: false
-                },
-                googleAccessToken: {
-                    type: DataTypes.STRING,
-                    allowNull: true
-                },
-                googleTokenExpireTime: {
-                    type: DataTypes.BIGINT,
-                    allowNull: true
                 }
             },
             {
