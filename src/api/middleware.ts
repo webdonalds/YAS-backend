@@ -4,7 +4,7 @@ import tokenService from '../service/tokenService';
 import { Token, User } from '../model/index';
 import googleService from '../service/googleService';
 
-const validateToken = async (request: express.Request, response: express.Response, next) => {
+const validateToken = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
     //TODO : Token will be given as header -> Authorization : Bearer token
     const encryptedToken: string = (request.headers['x-access-token'] || request.query.token) as string;
 
@@ -78,7 +78,7 @@ const validateToken = async (request: express.Request, response: express.Respons
     }
 };
 
-const getGoogleAccessToken = async (request: express.Request, response: express.Response, next) => {
+const getGoogleAccessToken = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
     const userId = request.body.userInfo.userId;
     if(!userId) {
         response.status(403).json({
