@@ -103,16 +103,21 @@ router.get('/auth', async (request: express.Request, response: express.Response)
         aboutMe: result.aboutMe,
     };
 
+    const yasToken = tokenService.makeYasToken();
+    const yasSecretKey = tokenService.makeYasSecretKey();
+
+    const yasAccessToken = tokenService.makeYasAccessToken(yasToken, yasSecretKey);
+    const yasRefreshToken = tokenService.makeYasRefreshToken(yasToken, yasSecretKey);
+
     const auth = {
-        yasToken: tokenService.makeYasToken(),
-        yasSecretKey: tokenService.makeYasSecretKey(),
-        expireTime: tokenService.expireTime
+        yasAccessToken: yasAccessToken,
+        yasRefreshToken: yasRefreshToken
     };
 
     await Token.create({
         userId: result.id,
-        yasToken: auth.yasToken,
-        yasSecretKey: auth.yasSecretKey
+        yasToken: yasToken,
+        yasSecretKey: yasSecretKey
     });
 
     response.json({
