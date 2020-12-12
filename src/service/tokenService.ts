@@ -29,11 +29,11 @@ function makeYasRefreshToken(yasToken:string, yasSecretKey:string): string{
 }
 
 
-function extractPayloadFromToken(encryptedToken: string): string {
+function extractPayloadFromToken(encryptedToken: string): {yasToken:string, type:string} {
     let ret = null;
     try {
         const payload = jwt.decode(encryptedToken);
-        ret = payload.yasToken;
+        ret = payload;
     } catch (err) {
         console.log(err.message);
     }

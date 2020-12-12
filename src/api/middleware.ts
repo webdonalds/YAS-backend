@@ -19,13 +19,24 @@ const validateToken = async (request: express.Request, response: express.Respons
         return;
     }
 
-    const yasToken = tokenService.extractPayloadFromToken(encryptedToken);
+    const {yasToken, type} = tokenService.extractPayloadFromToken(encryptedToken);
 
     if (yasToken == null) {
         response.status(401).json({
             error: {
                 message: 'invalid_token',
                 code: 401
+            }
+        });
+        return;
+    }
+
+    // need to give access type token
+    if (type != 'access'){
+        response.status(400).json({
+            error:{
+                message: 'wrong_token_type',
+                code: 400
             }
         });
         return;
