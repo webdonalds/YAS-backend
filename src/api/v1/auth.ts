@@ -6,7 +6,7 @@ import { User, Token } from '../../model/index';
 
 const router = express.Router();
 
-router.get('/auth', async (request: express.Request, response: express.Response) => {
+router.get('/login', async (request: express.Request, response: express.Response) => {
     const code: string = request.query.code as string;
 
     // when no code is returned
@@ -126,6 +126,99 @@ router.get('/auth', async (request: express.Request, response: express.Response)
     });
 
     return;
+});
+
+
+
+
+router.get('/access-token-by-refresh', async (request: express.Request, response: express.Response) => {
+
+    const encryptedRefreshToken: string = (request.headers['x-access-token'] || request.query.token) as string;
+
+
+    // if token does not exist
+    if (!encryptedRefreshToken) {
+        response.status(403).json({
+            error: {
+                message: 'no_token',
+                code: 403
+            }
+        });
+        return;
+    }
+
+    const {yasToken, type} = tokenService.extractPayloadFromToken(encryptedRefreshToken);
+
+    if (yasToken == null) {
+        response.status(401).json({
+            error: {
+                message: 'invalid_token',
+                code: 401
+            }
+        });
+        return;
+    }
+
+    // need to give refresh type token
+    if (type != 'refresh'){
+        response.status(400).json({
+            error:{
+                message: 'wrong_token_type',
+                code: 400
+            }
+        });
+        return;
+    }
+
+
+    const tokenInfo = await Token.findOne({
+        where: { yasToken: yasToken }
+    });
+
+
+    // no token found from database
+    if (tokenInfo == null) {
+        response.status(401).json({
+            error: {
+                message: 'invalid_token',
+                code: 401
+            }
+        });
+        return;
+    }
+
+    const validity = tokenService.verifyToken(encryptedRefreshToken, tokenInfo.yasSecretKey);
+
+    if (validity == tokenService.TOKEN_VALID) {
+        response.json({
+            yasAccessToken: tokenService.makeYasAccessToken(yasToken, tokenInfo.yasSecretKey)
+        });
+        return;
+    }
+    else if (validity == tokenService.TOKEN_INVALID) {
+        response.status(401).json({
+            error: {
+                message: 'invalid_token',
+                code: 401
+            }
+        });
+        return;
+    }
+    else if (validity == tokenService.TOKEN_EXPIRED) {
+        response.status(405).json({
+            error: {
+                message: 'token_expired',
+                code: 405
+            }
+        });
+
+        await Token.destroy({ 
+            where: { yasToken: yasToken } 
+        });
+        return;
+    }
+
+
 });
 
 export default router;
