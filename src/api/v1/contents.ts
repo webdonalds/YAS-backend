@@ -45,4 +45,25 @@ router.get('/likelist', async (req: express.Request, res: express.Response) => {
   }
 });
 
+router.get('/search', async (req: express.Request, res: express.Response) => {
+  const keyword: string = req.query.keyword as string;
+  const pageToken: string = req.query.pageToken as string;
+
+  if(keyword === undefined || keyword === '') {
+    res.status(400).json({
+      error: {
+        message: 'Lack of parameter : keyword',
+        code: 400
+      }
+    });
+    return;
+  }
+
+  try {
+    res.json(await googleService.search(keyword, pageToken));
+  } catch(e) {
+    res.status(400).json(e);
+  }
+});
+
 export default router;

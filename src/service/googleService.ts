@@ -102,6 +102,16 @@ class GoogleService {
         });
         return response.data;
     }
+
+    async search(keyword: string, pageToken: string) {
+        const googleClient = this.getYoutubeClient();
+        const response = await googleClient.search.list({
+            part: ['snippet'],
+            q: keyword,
+            pageToken: pageToken,
+        });
+        return response.data;
+    }
 }
 
 const googleService = new GoogleService();
