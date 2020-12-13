@@ -72,6 +72,21 @@ class GoogleService {
         });
         return response.data;
     }
+
+    async getPlaylistItems(accessToken: string, id: string, pageToken:string): Promise<youtube_v3.Schema$PlaylistItemListResponse> {
+        const authClient = this.getAuthClient();
+        authClient.setCredentials({
+            access_token: accessToken
+        });
+        const googleClient = this.getYoutubeClient();
+        const response = await googleClient.playlistItems.list({
+            auth: authClient,
+            part: ['snippet'],
+            playlistId: id,
+            pageToken: pageToken,
+        });
+        return response.data;
+    }
 }
 
 const googleService = new GoogleService();
