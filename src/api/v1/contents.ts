@@ -6,7 +6,11 @@ const router = express.Router();
 router.get('/playlists', async (req: express.Request, res: express.Response) => {
   const accessToken: string = req.body.userInfo.accessToken;
   const pageToken: string = req.query.pageToken as string;
-  res.json(await googleService.getMyPlaylist(accessToken, pageToken));
+  try {
+    res.json(await googleService.getMyPlaylist(accessToken, pageToken));
+  } catch(e) {
+    res.status(400).json(e);
+  }
 });
 
 router.get('/playlist', async (req: express.Request, res: express.Response) => {
@@ -26,6 +30,16 @@ router.get('/playlist', async (req: express.Request, res: express.Response) => {
 
   try {
     res.json(await googleService.getPlaylistItems(accessToken, id, pageToken));
+  } catch(e) {
+    res.status(400).json(e);
+  }
+});
+
+router.get('/likelist', async (req: express.Request, res: express.Response) => {
+  const accessToken: string = req.body.userInfo.accessToken;
+  const pageToken: string = req.query.pageToken as string;
+  try {
+    res.json(await googleService.getLikeVideos(accessToken, pageToken));
   } catch(e) {
     res.status(400).json(e);
   }

@@ -87,6 +87,21 @@ class GoogleService {
         });
         return response.data;
     }
+
+    async getLikeVideos(accessToken: string, pageToken: string) {
+        const authClient = this.getAuthClient();
+        authClient.setCredentials({
+            access_token: accessToken
+        });
+        const googleClient = this.getYoutubeClient();
+        const response = await googleClient.videos.list({
+            auth: authClient,
+            part: ['snippet'],
+            myRating: 'like',
+            pageToken: pageToken,
+        });
+        return response.data;
+    }
 }
 
 const googleService = new GoogleService();
