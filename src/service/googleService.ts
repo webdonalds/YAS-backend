@@ -62,8 +62,8 @@ class GoogleService {
         authClient.setCredentials({
             access_token: accessToken
         });
-        const googleClient = this.getYoutubeClient();
-        const response = await googleClient.playlists.list({
+        const youtubeClient = this.getYoutubeClient();
+        const response = await youtubeClient.playlists.list({
             auth: authClient,
             part: ['snippet'],
             mine: true,
@@ -77,8 +77,8 @@ class GoogleService {
         authClient.setCredentials({
             access_token: accessToken
         });
-        const googleClient = this.getYoutubeClient();
-        const response = await googleClient.playlistItems.list({
+        const youtubeClient = this.getYoutubeClient();
+        const response = await youtubeClient.playlistItems.list({
             auth: authClient,
             part: ['snippet'],
             playlistId: id,
@@ -92,8 +92,8 @@ class GoogleService {
         authClient.setCredentials({
             access_token: accessToken
         });
-        const googleClient = this.getYoutubeClient();
-        const response = await googleClient.videos.list({
+        const youtubeClient = this.getYoutubeClient();
+        const response = await youtubeClient.videos.list({
             auth: authClient,
             part: ['snippet'],
             myRating: 'like',
@@ -103,8 +103,8 @@ class GoogleService {
     }
 
     async search(keyword: string, pageToken: string) {
-        const googleClient = this.getYoutubeClient();
-        const response = await googleClient.search.list({
+        const youtubeClient = this.getYoutubeClient();
+        const response = await youtubeClient.search.list({
             part: ['snippet'],
             q: keyword,
             pageToken: pageToken,
