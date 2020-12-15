@@ -17,11 +17,10 @@ class GoogleService {
     }
 
     private getYoutubeClient() {
-        const client = google.youtube({
+        return google.youtube({
             version: 'v3',
             auth: apiKey,
         });
-        return client;
     }
 
     async getTokens(code) {
