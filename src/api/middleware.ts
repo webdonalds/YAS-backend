@@ -6,10 +6,10 @@ import googleService from '../service/googleService';
 
 const validateToken = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
     //TODO : Token will be given as header -> Authorization : Bearer token
-    const encryptedToken: string = (request.headers['x-access-token'] || request.query.token) as string;
+    const encryptedAccessToken: string = (request.headers['x-access-token'] || request.query.token) as string;
 
     // if token does not exist
-    if (!encryptedToken) {
+    if (!encryptedAccessToken) {
         response.status(403).json({
             error: {
                 message: 'no_token',
@@ -19,7 +19,7 @@ const validateToken = async (request: express.Request, response: express.Respons
         return;
     }
 
-    const yasToken = tokenService.extractPayloadFromToken(encryptedToken);
+    const {yasToken, type} = tokenService.extractPayloadFromToken(encryptedAccessToken);
 
     if (yasToken == null) {
         response.status(401).json({
@@ -31,12 +31,23 @@ const validateToken = async (request: express.Request, response: express.Respons
         return;
     }
 
-    const result = await Token.findOne({
+    // need to give access type token
+    if (type != 'access'){
+        response.status(400).json({
+            error:{
+                message: 'wrong_token_type',
+                code: 400
+            }
+        });
+        return;
+    }
+
+    const tokenInfo = await Token.findOne({
         where: { yasToken: yasToken }
     });
 
     // no token found from database
-    if (result == null) {
+    if (tokenInfo == null) {
         response.status(401).json({
             error: {
                 message: 'invalid_token',
@@ -46,11 +57,11 @@ const validateToken = async (request: express.Request, response: express.Respons
         return;
     }
 
-    const validity = tokenService.verifyToken(encryptedToken, result.yasSecretKey);
+    const validity = tokenService.verifyToken(encryptedAccessToken, tokenInfo.yasSecretKey);
 
     if (validity == tokenService.TOKEN_VALID) {
         request.body.userInfo = {
-            userId: result.userId
+            userId: tokenInfo.userId
         };
         next();
     }

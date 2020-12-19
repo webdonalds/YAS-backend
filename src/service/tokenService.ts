@@ -10,16 +10,33 @@ function makeYasToken(size = 40): string {
     return crypto.randomBytes(size).toString('hex');
 }
 
-function extractPayloadFromToken(encryptedToken: string): string {
-    let ret = null;
+function makeYasAccessToken(yasToken:string, yasSecretKey:string): string{
+    return jwt.sign({
+        yasToken: yasToken,
+        type: 'access'
+    }, yasSecretKey, {
+        expiresIn: yasAccessTokenExpireTime
+    });
+}
+
+function makeYasRefreshToken(yasToken:string, yasSecretKey:string): string{
+    return jwt.sign({
+        yasToken: yasToken,
+        type: 'refresh'
+    }, yasSecretKey, {
+        expiresIn: yasRefreshTokenExpireTime
+    });
+}
+
+
+function extractPayloadFromToken(encryptedToken: string): yasToken {
     try {
-        const payload = jwt.decode(encryptedToken);
-        ret = payload.yasToken;
+        return jwt.decode(encryptedToken);
     } catch (err) {
         console.log(err.message);
     }
 
-    return ret;
+    return null;
 }
 
 function verifyToken(encryptedToken: string, secret: string): number {
@@ -38,12 +55,21 @@ const TOKEN_EXPIRED = -1;
 const TOKEN_INVALID = 0;
 const TOKEN_VALID = 1;
 
-const expireTime = 3600;
+const yasAccessTokenExpireTime = 3600; // 1 hour;
+const yasRefreshTokenExpireTime = 604800; // 1 week;
+
+type yasToken = {
+    yasToken: string,
+    type: string
+};
 
 export default {
     makeYasSecretKey,
     makeYasToken,
-    expireTime,
+    makeYasAccessToken,
+    makeYasRefreshToken,
+    yasAccessTokenExpireTime,
+    yasRefreshTokenExpireTime,
     extractPayloadFromToken,
     verifyToken,
     TOKEN_EXPIRED,
