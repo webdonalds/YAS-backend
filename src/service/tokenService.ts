@@ -29,16 +29,14 @@ function makeYasRefreshToken(yasToken:string, yasSecretKey:string): string{
 }
 
 
-function extractPayloadFromToken(encryptedToken: string): {yasToken:string, type:string} {
-    let ret = null;
+function extractPayloadFromToken(encryptedToken: string): yasToken {
     try {
-        const payload = jwt.decode(encryptedToken);
-        ret = payload;
+        return jwt.decode(encryptedToken);
     } catch (err) {
         console.log(err.message);
     }
 
-    return ret;
+    return null;
 }
 
 function verifyToken(encryptedToken: string, secret: string): number {
@@ -59,6 +57,11 @@ const TOKEN_VALID = 1;
 
 const yasAccessTokenExpireTime = 3600; // 1 hour;
 const yasRefreshTokenExpireTime = 604800; // 1 week;
+
+type yasToken = {
+    yasToken: string,
+    type: string
+};
 
 export default {
     makeYasSecretKey,
