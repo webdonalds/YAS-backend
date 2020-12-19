@@ -79,6 +79,12 @@ const validateToken = async (request: express.Request, response: express.Respons
 };
 
 const getGoogleAccessToken = async (request: express.Request, response: express.Response, next: express.NextFunction): Promise<void> => {
+    const nonSecurePaths = ['/search'];
+    if(nonSecurePaths.includes(request.path)) {
+        next();
+        return;
+    }
+
     const userId = request.body.userInfo.userId;
     if(!userId) {
         response.status(403).json({
