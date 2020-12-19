@@ -8,6 +8,7 @@
         "databaseEndpoint": "DB_HOST"
     },
     "oauth2": {
+        "apiKey": "API_KEY",
         "web": {
             "client_id":"CLI_ID,
             "project_id":"PROJECT",
