@@ -216,5 +216,49 @@ router.put('/video', async (request: express.Request, response: express.Response
 });
 
 
+// delete video
+router.delete('/video', async (request: express.Request, response: express.Response) => {
+    const userId = request.body.userInfo ? request.body.userInfo.userId : null;
+    const videoPostId = request.body.videoPostId;
+
+    if(!userId){
+        response.status(403).json({
+            error: {
+                message: 'require_parameter_userId',
+                code: 403
+            }
+        });
+        return;
+    }
+
+    if(!videoPostId){
+        response.status(403).json({
+            error: {
+                message: 'require_parameter_videoPostId',
+                code: 403
+            }
+        });
+        return;
+    }
+
+
+    await Video.destroy({ 
+        where: { 
+            userId: userId,
+            id: videoPostId
+        } 
+    });
+
+    // TODO : Delete tags 
+
+    
+    response.json({
+        message: 'success',
+    });
+
+
+    return;
+});
+
 
 export default router;
