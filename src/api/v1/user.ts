@@ -24,7 +24,7 @@ router.put('/nickname', async (request: express.Request, response: express.Respo
         response.json({
             error: {
                 message: 'nickname_too_long',
-                specific: 'nickname length should be less then 50',
+                specific: 'nickname length should be less than 50',
                 code: 401
             }
         });
@@ -69,7 +69,7 @@ router.put('/about-me', async (request: express.Request, response: express.Respo
         response.json({
             error: {
                 message: 'about_me_too_long',
-                specific: 'about me length should be less then 100',
+                specific: 'about me length should be less than 100',
                 code: 401
             }
         });
