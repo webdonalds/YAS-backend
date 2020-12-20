@@ -8,7 +8,9 @@ const router = express.Router();
 // post video
 router.post('/video', async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
-    const videoPost = request.body.videoPost ? request.body.videoPost : null;
+    const videoId = request.body.videoId;
+    const title = request.body.title;
+    const description = request.body.description;
 
 
     if(!userId){
@@ -21,63 +23,63 @@ router.post('/video', async (request: express.Request, response: express.Respons
         return;
     }
 
-    if(!videoPost.videoId){
+    if(!videoId){
         response.status(403).json({
             error: {
-                message: 'require_parameter_videoPost.videoId',
+                message: 'require_parameter_videoId',
                 code: 403
             }
         });
         return;
     }
 
-    if(!videoPost.title){
+    if(!title){
         response.status(403).json({
             error: {
-                message: 'require_parameter_videoPost.title',
+                message: 'require_parameter_title',
                 code: 403
             }
         });
         return;
     }
 
-    if(!videoPost.description){
+    if(!description){
         response.status(403).json({
             error: {
-                message: 'require_parameter_videoPost.description',
+                message: 'require_parameter_description',
                 code: 403
             }
         });
         return;
     }
 
-    if (videoPost.title.length >= 100) {
+    if (title.length >= 100) {
         response.status(401).json({
             error: {
-                message: 'videoPost.title_too_long',
-                specific: 'videoPost.title length should be less than 100',
+                message: 'title_too_long',
+                specific: 'title length should be less than 100',
                 code: 401
             }
         });
         return;
     }
 
-    if (videoPost.title.length <= 1) {
+    if (title.length <= 1) {
         response.status(401).json({
             error: {
-                message: 'videoPost.title_too_short',
-                specific: 'videoPost.title length should be more than 2',
+                message: 'title_too_short',
+                specific: 'title length should be more than 2',
                 code: 401
             }
         });
         return;
     }
 
-    if (videoPost.description.length >= 250) {
+    if (description.length >= 250) {
         response.status(401).json({
             error: {
-                message: 'videoPost.title_too_long',
-                specific: 'videoPost.title length should be less than 250',
+                message: 'description_too_long',
+                specific: 'description length should be less than 250',
                 code: 401
             }
         });
@@ -85,11 +87,11 @@ router.post('/video', async (request: express.Request, response: express.Respons
     }
 
 
-    const postId = await Video.create({
-        videoId: videoPost.videoId,
+    const result = await Video.create({
+        videoId: videoId,
         userId: userId,
-        title: videoPost.title,
-        description: videoPost.description
+        title: title,
+        description: description
     });
 
     // TODO : add tags for video posts.
@@ -97,7 +99,7 @@ router.post('/video', async (request: express.Request, response: express.Respons
 
     response.json({
         message: 'success',
-        postId: postId
+        postId: result.id
     });
 
     return;
