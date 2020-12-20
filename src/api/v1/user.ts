@@ -11,7 +11,7 @@ router.put('/nickname', async (request: express.Request, response: express.Respo
     const newNickname = request.body.newNickname;
 
     if (newNickname == null) {
-        response.json({
+        response.status(403).json({
             error: {
                 message: 'require_parameter_newNickname',
                 code: 403
@@ -21,7 +21,7 @@ router.put('/nickname', async (request: express.Request, response: express.Respo
     }
 
     if (newNickname.length >= 50) {
-        response.json({
+        response.status(401).json({
             error: {
                 message: 'nickname_too_long',
                 specific: 'nickname length should be less than 50',
@@ -56,7 +56,7 @@ router.put('/about-me', async (request: express.Request, response: express.Respo
     const newAboutMe = request.body.newAboutMe;
 
     if (newAboutMe == null) {
-        response.json({
+        response.status(403).json({
             error: {
                 message: 'require_parameter_newAboutMe',
                 code: 403
@@ -66,7 +66,7 @@ router.put('/about-me', async (request: express.Request, response: express.Respo
     }
 
     if (newAboutMe.length >= 100) {
-        response.json({
+        response.status(401).json({
             error: {
                 message: 'about_me_too_long',
                 specific: 'about me length should be less than 100',
