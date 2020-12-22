@@ -1,6 +1,7 @@
 import * as express from 'express';
 
 import { Video } from '../../model/index';
+import tagService from '../../service/tagService';
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ router.post('/video', async (request: express.Request, response: express.Respons
     const videoId = request.body.videoId;
     const title = request.body.title;
     const description = request.body.description;
+    const tags = request.body.tags;
 
 
     if(!userId){
@@ -79,6 +81,38 @@ router.post('/video', async (request: express.Request, response: express.Respons
         return;
     }
 
+    const tagValidation = tagService.validateTags(tags);
+
+    // tag errors
+    if(tagValidation == tagService.TAGS_TOO_LONG){
+        response.status(400).json({
+            error: {
+                message: 'tags_too_long',
+                specific: 'Each tag\'s lenght should be less or equal than ' + tagService.TAG_MAX_LENGTH.toString(),
+            }
+        });
+        return;
+    }
+
+    if(tagValidation == tagService.TAGS_TOO_MANY){ 
+        response.status(400).json({
+            error: {
+                message: 'tags_too_many',
+                specific: 'The number of tags should be less or equal than ' + tagService.TAG_MAX_NUM.toString(),
+            }
+        });
+        return;
+    }
+
+    if(tagValidation == tagService.TAGS_WITH_FORBIDDEN_CHAR){ 
+        response.status(400).json({
+            error: {
+                message: 'tags_with_forbidden_char',
+                specific: 'Only English, Korean, numbers are allowed in tags'
+            }
+        });
+        return;
+    }
 
     const result = await Video.create({
         videoId: videoId,
@@ -87,9 +121,8 @@ router.post('/video', async (request: express.Request, response: express.Respons
         description: description
     });
 
-    // TODO : add tags for video posts.
-
-
+    
+    
     response.json({
         postId: result.id
     });
