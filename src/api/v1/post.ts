@@ -14,73 +14,66 @@ router.post('/video', async (request: express.Request, response: express.Respons
 
 
     if(!userId){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_userId',
-                code: 403
+                message: 'require_body_parameter_userId',
             }
         });
         return;
     }
 
     if(!videoId){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_videoId',
-                code: 403
+                message: 'require_body_parameter_videoId',
             }
         });
         return;
     }
 
     if(!title){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_title',
-                code: 403
+                message: 'require_body_parameter_title',
             }
         });
         return;
     }
 
     if(!description){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_description',
-                code: 403
+                message: 'require_body_parameter_description',
             }
         });
         return;
     }
 
     if (title.length >= 100) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
                 message: 'title_too_long',
                 specific: 'title length should be less than 100',
-                code: 401
             }
         });
         return;
     }
 
     if (title.length <= 1) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
                 message: 'title_too_short',
                 specific: 'title length should be more than 2',
-                code: 401
             }
         });
         return;
     }
 
     if (description.length >= 250) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
                 message: 'description_too_long',
                 specific: 'description length should be less than 250',
-                code: 401
             }
         });
         return;
@@ -98,7 +91,6 @@ router.post('/video', async (request: express.Request, response: express.Respons
 
 
     response.json({
-        message: 'success',
         postId: result.id
     });
 
@@ -118,73 +110,66 @@ router.put('/video', async (request: express.Request, response: express.Response
     const description = request.body.description;
 
     if(!userId){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_userId',
-                code: 403
+                message: 'require_body_parameter_userId',
             }
         });
         return;
     }
 
     if(!videoPostId){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_videoPostId',
-                code: 403
+                message: 'require_body_parameter_videoPostId',
             }
         });
         return;
     }
 
     if(!title){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_title',
-                code: 403
+                message: 'require_body_parameter_title',
             }
         });
         return;
     }
 
     if(!description){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_description',
-                code: 403
+                message: 'require_body_parameter_description',
             }
         });
         return;
     }
 
     if (title.length >= 100) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
                 message: 'title_too_long',
                 specific: 'title length should be less than 100',
-                code: 401
             }
         });
         return;
     }
 
     if (title.length <= 1) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
                 message: 'title_too_short',
                 specific: 'title length should be more than 2',
-                code: 401
             }
         });
         return;
     }
 
     if (description.length >= 250) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
                 message: 'description_too_long',
                 specific: 'description length should be less than 250',
-                code: 401
             }
         });
         return;
@@ -222,20 +207,18 @@ router.delete('/video', async (request: express.Request, response: express.Respo
     const videoPostId = request.body.videoPostId;
 
     if(!userId){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_userId',
-                code: 403
+                message: 'require_body_parameter_userId',
             }
         });
         return;
     }
 
     if(!videoPostId){
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'require_parameter_videoPostId',
-                code: 403
+                message: 'require_body_parameter_videoPostId',
             }
         });
         return;

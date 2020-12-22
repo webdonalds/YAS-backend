@@ -10,10 +10,9 @@ const validateToken = async (request: express.Request, response: express.Respons
 
     // if token does not exist
     if (!encryptedAccessToken) {
-        response.status(403).json({
+        response.status(401).json({
             error: {
-                message: 'no_token',
-                code: 403
+                message: 'no_access_token',
             }
         });
         return;
@@ -24,8 +23,8 @@ const validateToken = async (request: express.Request, response: express.Respons
     if (yasToken == null) {
         response.status(401).json({
             error: {
-                message: 'invalid_token',
-                code: 401
+                message: 'invalid_access_token',
+                specific: 'token payload cannot be extracted'
             }
         });
         return;
@@ -33,10 +32,9 @@ const validateToken = async (request: express.Request, response: express.Respons
 
     // need to give access type token
     if (type != 'access'){
-        response.status(400).json({
+        response.status(401).json({
             error:{
                 message: 'wrong_token_type',
-                code: 400
             }
         });
         return;
@@ -50,8 +48,8 @@ const validateToken = async (request: express.Request, response: express.Respons
     if (tokenInfo == null) {
         response.status(401).json({
             error: {
-                message: 'invalid_token',
-                code: 401
+                message: 'invalid_access_token',
+                specific: 'token not found in DB'
             }
         });
         return;
@@ -69,16 +67,15 @@ const validateToken = async (request: express.Request, response: express.Respons
         response.status(401).json({
             error: {
                 message: 'invalid_token',
-                code: 401
+                specific: 'failed to be verified by jwt'
             }
         });
         return;
     }
     else if (validity == tokenService.TOKEN_EXPIRED) {
-        response.status(405).json({
+        response.status(401).json({
             error: {
-                message: 'token_expired',
-                code: 405
+                message: 'access_token_expired',
             }
         });
 
@@ -98,10 +95,9 @@ const getGoogleAccessToken = async (request: express.Request, response: express.
 
     const userId = request.body.userInfo.userId;
     if(!userId) {
-        response.status(403).json({
+        response.status(401).json({
             error: {
                 message: 'no_user_id',
-                code: 403
             }
         });
         return;
@@ -112,10 +108,9 @@ const getGoogleAccessToken = async (request: express.Request, response: express.
     });
 
     if(user == null) {
-        response.status(404).json({
+        response.status(401).json({
             error: {
                 message: 'user_not_found',
-                code: 404
             }
         });
         return;
@@ -127,10 +122,9 @@ const getGoogleAccessToken = async (request: express.Request, response: express.
         next();
     } catch (e) {
         console.log(e);
-        response.status(403).json({
+        response.status(401).json({
             error: {
                 message: 'google_api_error',
-                code: 410
             }
         });
         return;
