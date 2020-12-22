@@ -4,6 +4,8 @@ import { Tag } from '../model/index';
 const TAG_MAX_LENGTH = 10;
 const TAG_MAX_NUM = 5;
 
+
+// validation codes
 const TAGS_OKAY = 1;
 const TAGS_TOO_LONG = 0;
 const TAGS_WITH_FORBIDDEN_CHAR = -1;
@@ -13,7 +15,6 @@ const TAGS_TOO_MANY = -2;
 // patterns
 const TAG_ALLOWED_PATTERN = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-zA-Z|0-9]/;
 const TAG_FORBIDDEN_PATTERN = /[~!@#$%^&*()_+|<>?:{}]/;
-
 
 
 function validateTags(tags: Array<string>): number {
@@ -28,6 +29,23 @@ function validateTags(tags: Array<string>): number {
 }
 
 
+function storeTagsIfNew(tags: Array<string>): void {
+
+    tags.forEach(async (tag) => {
+        const result = await Tag.findOne({
+            where: { tagName: tag }
+        });
+
+        // if no tag name found
+        if(result == null){
+            await Tag.create({
+                tagName: tag
+            });
+        }
+    });
+}
+
+
 export default {
     TAG_MAX_LENGTH,
     TAG_MAX_NUM,
@@ -36,4 +54,5 @@ export default {
     TAGS_TOO_MANY,
     TAGS_WITH_FORBIDDEN_CHAR,
     validateTags,
+    storeTagsIfNew,
 };

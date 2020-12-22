@@ -122,7 +122,9 @@ router.post('/video', async (request: express.Request, response: express.Respons
     });
 
     
-    
+    tagService.storeTagsIfNew(tags);
+
+
     response.json({
         postId: result.id
     });
