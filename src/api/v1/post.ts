@@ -1,7 +1,7 @@
 import * as express from 'express';
-
 import { Video, Tag, VideoHasTag } from '../../model/index';
 import tagService from '../../service/tagService';
+import postErrors from '../../error/postErrors';
 
 const router = express.Router();
 
@@ -14,109 +14,23 @@ router.post('/video', async (request: express.Request, response: express.Respons
     const description = request.body.description;
     const tags = request.body.tags;
 
+    const parameters = {
+        userId: userId,
+        videoId: videoId, 
+        title: title,
+        description: description,
+        tags: tags
+    };
 
-    if(!userId){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_userId',
-            }
-        });
-        return;
-    }
 
-    if(!videoId){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_videoId',
-            }
-        });
-        return;
-    }
-
-    if(!title){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_title',
-            }
-        });
-        return;
-    }
-
-    if(!description){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_description',
-            }
-        });
-        return;
-    }
-
-    if (title.length >= 100) {
-        response.status(400).json({
-            error: {
-                message: 'title_too_long',
-                specific: 'title length should be less than 100',
-            }
-        });
-        return;
-    }
-
-    if (title.length <= 1) {
-        response.status(400).json({
-            error: {
-                message: 'title_too_short',
-                specific: 'title length should be more than 2',
-            }
-        });
-        return;
-    }
-
-    if (description.length >= 250) {
-        response.status(400).json({
-            error: {
-                message: 'description_too_long',
-                specific: 'description length should be less than 250',
-            }
-        });
-        return;
-    }
-
-    const tagValidation = tagService.validateTags(tags);
-
-    // tag errors
-    if(tagValidation == tagService.TAGS_TOO_LONG){
-        response.status(400).json({
-            error: {
-                message: 'tags_too_long',
-                specific: 'Each tag\'s lenght should be less or equal than ' + tagService.TAG_MAX_LENGTH.toString(),
-            }
-        });
-        return;
-    }
-
-    if(tagValidation == tagService.TAGS_TOO_MANY){ 
-        response.status(400).json({
-            error: {
-                message: 'tags_too_many',
-                specific: 'The number of tags should be less or equal than ' + tagService.TAG_MAX_NUM.toString(),
-            }
-        });
-        return;
-    }
-
-    if(tagValidation == tagService.TAGS_WITH_FORBIDDEN_CHAR){ 
-        response.status(400).json({
-            error: {
-                message: 'tags_with_forbidden_char',
-                specific: 'Only English, Korean, numbers are allowed in tags'
-            }
-        });
-        return;
-    }
-
-    // Store new tags to database, and get tagId of all tags.
-    const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
+    const error = postErrors.validatePostVideoParameters(parameters);
     
+    if(error){
+        response.status(400).json(error);
+        return;
+    }
+    
+
     const result = await Video.create({
         videoId: videoId,
         userId: userId,
@@ -124,9 +38,13 @@ router.post('/video', async (request: express.Request, response: express.Respons
         description: description,
     });
 
+
+    // Store new tags to database, and get tagId of all tags.
+    const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
     // Store new relation ship between video and tags
     tagService.addVideoHasTag(result.id, tagIds);
 
+    
     response.json({
         postId: result.id
     });
@@ -145,75 +63,25 @@ router.put('/video', async (request: express.Request, response: express.Response
     const videoPostId = request.body.videoPostId;
     const title = request.body.title;
     const description = request.body.description;
+    const tags = request.body.tags;
 
-    if(!userId){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_userId',
-            }
-        });
-        return;
-    }
+    const parameters = {
+        userId: userId,
+        videoPostId: videoPostId,
+        title: title,
+        description: description,
+        tags: tags
+    };
 
-    if(!videoPostId){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_videoPostId',
-            }
-        });
-        return;
-    }
 
-    if(!title){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_title',
-            }
-        });
-        return;
-    }
+    const error = postErrors.validatePutVideoParameters(parameters);
 
-    if(!description){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_description',
-            }
-        });
-        return;
-    }
-
-    if (title.length >= 100) {
-        response.status(400).json({
-            error: {
-                message: 'title_too_long',
-                specific: 'title length should be less than 100',
-            }
-        });
-        return;
-    }
-
-    if (title.length <= 1) {
-        response.status(400).json({
-            error: {
-                message: 'title_too_short',
-                specific: 'title length should be more than 2',
-            }
-        });
-        return;
-    }
-
-    if (description.length >= 250) {
-        response.status(400).json({
-            error: {
-                message: 'description_too_long',
-                specific: 'description length should be less than 250',
-            }
-        });
+    if(error){
+        response.status(400).json(error);
         return;
     }
 
 
-    
     await Video.update(
         {
             title: title,
@@ -227,8 +95,9 @@ router.put('/video', async (request: express.Request, response: express.Response
         }
     );
 
-    // TODO : modify tags for video posts.
 
+    // TODO : modify tags for video posts.
+    
 
     response.json({
         message: 'success',
@@ -243,21 +112,16 @@ router.delete('/video', async (request: express.Request, response: express.Respo
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
     const videoPostId = request.body.videoPostId;
 
-    if(!userId){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_userId',
-            }
-        });
-        return;
-    }
+    const parameters = {
+        userId: userId,
+        videoPostId: videoPostId
+    };
 
-    if(!videoPostId){
-        response.status(400).json({
-            error: {
-                message: 'require_body_parameter_videoPostId',
-            }
-        });
+
+    const error = postErrors.validateDeleteVideoParameters(parameters);
+
+    if(error){
+        response.status(400).json(error);
         return;
     }
 
@@ -268,8 +132,7 @@ router.delete('/video', async (request: express.Request, response: express.Respo
             id: videoPostId
         } 
     });
-
-    // TODO : Delete tags 
+    // video_has_tag will be deleted automatically by Database setting.
 
     
     response.json({
