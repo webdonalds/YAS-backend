@@ -1,4 +1,4 @@
-import { Tag } from '../model/index';
+import { Tag, VideoHasTag } from '../model/index';
 
 
 const TAG_MAX_LENGTH = 10;
@@ -29,7 +29,7 @@ function validateTags(tags: Array<string>): number {
 }
 
 
-async function storeTagsIfNewAndGetTagIds(tags: Array<string>): Promise<Array<tagIdObject>> {
+async function storeTagsIfNewAndGetTagIds(tags: Array<string>): Promise<Array<number>> {
     const ret = [];
 
     for(let i=0;i<tags.length;i++){
@@ -37,18 +37,24 @@ async function storeTagsIfNewAndGetTagIds(tags: Array<string>): Promise<Array<ta
             where: { tagName: tags[i] }
         });
         
-        ret.push({
-            tagId: result[0].getDataValue('id')
-        });
+        ret.push(result[0].getDataValue('id'));
     }
 
     return ret;
 }
 
 
-type tagIdObject = {
-    tagId: number
-};
+function addVideoHasTag(videoId: number, tagIds: Array<number>): void {
+    tagIds.forEach((tagId) => {
+        VideoHasTag.findOrCreate({
+            where: {
+                videoId: videoId,
+                tagId: tagId
+            }
+        });
+    });
+} 
+
 
 export default {
     TAG_MAX_LENGTH,
@@ -58,5 +64,6 @@ export default {
     TAGS_TOO_MANY,
     TAGS_WITH_FORBIDDEN_CHAR,
     validateTags,
-    storeTagsIfNewAndGetTagIds
+    storeTagsIfNewAndGetTagIds,
+    addVideoHasTag
 };
