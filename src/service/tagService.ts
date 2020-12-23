@@ -1,4 +1,4 @@
-import { Tag } from '../model/index';
+import { Tag, Video } from '../model/index';
 
 
 const TAG_MAX_LENGTH = 10;
@@ -30,20 +30,13 @@ function validateTags(tags: Array<string>): number {
 
 
 function storeTagsIfNew(tags: Array<string>): void {
-
     tags.forEach(async (tag) => {
-        const result = await Tag.findOne({
-            where: { tagName: tag }
+        await Tag.findOrCreate({
+            where: { tagName: tag}
         });
-
-        // if no tag name found
-        if(result == null){
-            await Tag.create({
-                tagName: tag
-            });
-        }
     });
 }
+
 
 
 export default {
