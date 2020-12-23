@@ -39,9 +39,7 @@ router.post('/video', async (request: express.Request, response: express.Respons
     });
 
 
-    // Store new tags to database, and get tagId of all tags.
     const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
-    // Store new relation ship between video and tags
     tagService.addVideoHasTag(result.id, tagIds);
 
     
@@ -96,7 +94,10 @@ router.put('/video', async (request: express.Request, response: express.Response
     );
 
 
-    // TODO : modify tags for video posts.
+    // update tags
+    const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
+    await tagService.deleteVideoHasTag(videoPostId);
+    tagService.addVideoHasTag(videoPostId, tagIds);
     
 
     response.json({

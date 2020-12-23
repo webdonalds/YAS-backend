@@ -56,6 +56,15 @@ function addVideoHasTag(videoId: number, tagIds: Array<number>): void {
 } 
 
 
+async function deleteVideoHasTag(videoId: number): Promise<void> {
+    await VideoHasTag.destroy({
+        where: {
+            videoId: videoId
+        }
+    });
+}
+
+
 export default {
     TAG_MAX_LENGTH,
     TAG_MAX_NUM,
@@ -65,5 +74,6 @@ export default {
     TAGS_WITH_FORBIDDEN_CHAR,
     validateTags,
     storeTagsIfNewAndGetTagIds,
-    addVideoHasTag
+    addVideoHasTag,
+    deleteVideoHasTag
 };
