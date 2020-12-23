@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-import { Video } from '../../model/index';
+import { Video, Tag, VideoHasTag } from '../../model/index';
 import tagService from '../../service/tagService';
 
 const router = express.Router();
@@ -114,16 +114,18 @@ router.post('/video', async (request: express.Request, response: express.Respons
         return;
     }
 
+    // Store new tags to database, and get tagId of all tags.
+    const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
+    
     const result = await Video.create({
         videoId: videoId,
         userId: userId,
         title: title,
-        description: description
+        description: description,
     });
 
-    
-    tagService.storeTagsIfNew(tags);
-
+    // Store new relation ship between video and tags
+    tagService.addVideoHasTag(result.id, tagIds);
 
     response.json({
         postId: result.id
