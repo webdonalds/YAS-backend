@@ -1,4 +1,4 @@
-import { Tag, Video } from '../model/index';
+import { Tag } from '../model/index';
 
 
 const TAG_MAX_LENGTH = 10;
@@ -29,15 +29,26 @@ function validateTags(tags: Array<string>): number {
 }
 
 
-function storeTagsIfNew(tags: Array<string>): void {
-    tags.forEach(async (tag) => {
-        await Tag.findOrCreate({
-            where: { tagName: tag}
+async function storeTagsIfNewAndGetTagIds(tags: Array<string>): Promise<Array<tagIdObject>> {
+    const ret = [];
+
+    for(let i=0;i<tags.length;i++){
+        const result = await Tag.findOrCreate({
+            where: { tagName: tags[i] }
         });
-    });
+        
+        ret.push({
+            tagId: result[0].getDataValue('id')
+        });
+    }
+
+    return ret;
 }
 
 
+type tagIdObject = {
+    tagId: number
+};
 
 export default {
     TAG_MAX_LENGTH,
@@ -47,5 +58,5 @@ export default {
     TAGS_TOO_MANY,
     TAGS_WITH_FORBIDDEN_CHAR,
     validateTags,
-    storeTagsIfNew,
+    storeTagsIfNewAndGetTagIds
 };
