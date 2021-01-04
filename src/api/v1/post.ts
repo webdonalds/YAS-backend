@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Video } from '../../model/index';
 import tagService from '../../service/tagService';
-import postErrors from '../../error/postErrors';
+import postValidation from '../../validation/postValidation';
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router.post('/video', async (request: express.Request, response: express.Respons
     };
 
 
-    const error = postErrors.validatePostVideoParameters(parameters);
+    const error = postValidation.validatePostVideoParameters(parameters);
     
     if(error){
         response.status(400).json(error);
@@ -68,7 +68,7 @@ router.put('/video', async (request: express.Request, response: express.Response
     };
 
 
-    const error = await postErrors.validatePutVideoParameters(parameters);
+    const error = await postValidation.validatePutVideoParameters(parameters);
 
     if(error){
         response.status(400).json(error);
@@ -115,7 +115,7 @@ router.delete('/video', async (request: express.Request, response: express.Respo
     };
 
 
-    const error = await postErrors.validateDeleteVideoParameters(parameters);
+    const error = await postValidation.validateDeleteVideoParameters(parameters);
 
     if(error){
         response.status(400).json(error);
