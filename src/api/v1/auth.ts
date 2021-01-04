@@ -13,8 +13,7 @@ router.get('/login', async (request: express.Request, response: express.Response
     if (code == null) {
         response.status(400).json({
             error: {
-                message: 'Lack of parameter : code',
-                code: 400
+                message: 'require_url_parameter_code',
             }
         });
         return;
@@ -26,11 +25,10 @@ router.get('/login', async (request: express.Request, response: express.Response
     try {
         googleTokens = await googleService.getTokens(code);
     } catch (error) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
-                message: 'Invalid code value',
+                message: 'invalid_code',
                 specific: error,
-                code: 401
             }
         });
         return;
@@ -38,10 +36,10 @@ router.get('/login', async (request: express.Request, response: express.Response
 
     // if no access_token is returned, then something went wrong
     if (!('access_token' in googleTokens)) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
-                message: 'Invalid code value : access_token not returned',
-                code: 401
+                message: 'invalid_code_no_access_token',
+                specific: 'Access token was not returned'
             }
         });
         return;
@@ -57,10 +55,9 @@ router.get('/login', async (request: express.Request, response: express.Response
 
     if (result == null) {
         if (!('refresh_token' in googleTokens)) {
-            response.status(404).json({
+            response.status(400).json({
                 error: {
-                    message: 'user not found : please reset Google OAUTH2 for out app',
-                    code: 404
+                    message: 'user_not_found',
                 }
             });
 
@@ -138,10 +135,9 @@ router.get('/access-token', async (request: express.Request, response: express.R
 
     // if token does not exist
     if (!encryptedRefreshToken) {
-        response.status(403).json({
+        response.status(400).json({
             error: {
-                message: 'no_token',
-                code: 403
+                message: 'no_refresh_token',
             }
         });
         return;
@@ -150,10 +146,10 @@ router.get('/access-token', async (request: express.Request, response: express.R
     const {yasToken, type} = tokenService.extractPayloadFromToken(encryptedRefreshToken);
 
     if (yasToken == null) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
-                message: 'invalid_token',
-                code: 401
+                message: 'invalid_refresh_token',
+                specific: 'payload not extracted from token'
             }
         });
         return;
@@ -164,7 +160,7 @@ router.get('/access-token', async (request: express.Request, response: express.R
         response.status(400).json({
             error:{
                 message: 'wrong_token_type',
-                code: 400
+                specific: 'require token type : refresh'
             }
         });
         return;
@@ -178,10 +174,10 @@ router.get('/access-token', async (request: express.Request, response: express.R
 
     // no token found from database
     if (tokenInfo == null) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
-                message: 'invalid_token',
-                code: 401
+                message: 'invalid_refresh_token',
+                specific: 'no refresh token found in DB'
             }
         });
         return;
@@ -196,19 +192,18 @@ router.get('/access-token', async (request: express.Request, response: express.R
         return;
     }
     else if (validity == tokenService.TOKEN_INVALID) {
-        response.status(401).json({
+        response.status(400).json({
             error: {
-                message: 'invalid_token',
-                code: 401
+                message: 'invalid_refresh_token',
+                specific: 'not valid jwt refresh token'
             }
         });
         return;
     }
     else if (validity == tokenService.TOKEN_EXPIRED) {
-        response.status(405).json({
+        response.status(400).json({
             error: {
-                message: 'token_expired',
-                code: 405
+                message: 'refresh_token_expired',
             }
         });
 
