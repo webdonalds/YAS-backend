@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Video, Tag, VideoHasTag } from '../../model/index';
+import { Video } from '../../model/index';
 import tagService from '../../service/tagService';
 import postErrors from '../../error/postErrors';
 
