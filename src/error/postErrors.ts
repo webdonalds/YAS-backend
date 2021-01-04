@@ -1,3 +1,5 @@
+import { Video } from '../model/index';
+
 type postVideoParameters = {
     userId: number | null,
     videoId: string | null,
@@ -65,6 +67,21 @@ function validateTags(tags: Array<string>): number {
 const TITLE_MAX_LENGTH = 100;
 const TITLE_MIN_LENGTH = 2;
 const DESCRIPTION_MAX_LENGTH = 250;
+
+
+/*
+  Validate if user is owner of Video
+*/
+async function validateVideoOwner(userId:number, videoPostId:number): Promise<boolean> {
+    const result = await Video.findOne({
+        where: { userId: userId, id: videoPostId }
+    });
+
+    if(result==null) return false;
+
+    return true;
+}
+
 
 
 // error for : POST - /v1/post/video
@@ -166,7 +183,7 @@ function validatePostVideoParameters(parameters: postVideoParameters): postApiEr
 }
 
 
-function validatePutVideoParameters(parameters: putVideoParameters): postApiError | null{
+async function validatePutVideoParameters(parameters: putVideoParameters): Promise<postApiError> | null{
     if(!parameters.userId){
         return {
             error: {
@@ -260,11 +277,20 @@ function validatePutVideoParameters(parameters: putVideoParameters): postApiErro
         };
     }
 
+    if(!(await validateVideoOwner(parameters.userId, parameters.videoPostId))){
+        return {
+            error: {
+                message: 'not_owner',
+                specific: 'Given user is not the owner of the video post'
+            }
+        };
+    }
+
     return null;
 }
 
 
-function validateDeleteVideoParameters(parameters: deleteVideoParameters): postApiError | null{
+async function validateDeleteVideoParameters(parameters: deleteVideoParameters): Promise<postApiError> | null{
     if(!parameters.userId){
         return {
             error: {
@@ -283,6 +309,14 @@ function validateDeleteVideoParameters(parameters: deleteVideoParameters): postA
         };
     }
 
+    if(!(await validateVideoOwner(parameters.userId, parameters.videoPostId))){
+        return {
+            error: {
+                message: 'not_owner',
+                specific: 'Given user is not the owner of the video post'
+            }
+        };
+    }
 
     return null;
 }

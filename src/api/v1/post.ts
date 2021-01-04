@@ -68,7 +68,7 @@ router.put('/video', async (request: express.Request, response: express.Response
     };
 
 
-    const error = postErrors.validatePutVideoParameters(parameters);
+    const error = await postErrors.validatePutVideoParameters(parameters);
 
     if(error){
         response.status(400).json(error);
@@ -115,7 +115,7 @@ router.delete('/video', async (request: express.Request, response: express.Respo
     };
 
 
-    const error = postErrors.validateDeleteVideoParameters(parameters);
+    const error = await postErrors.validateDeleteVideoParameters(parameters);
 
     if(error){
         response.status(400).json(error);
