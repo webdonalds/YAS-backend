@@ -51,10 +51,6 @@ router.post('/video', async (request: express.Request, response: express.Respons
 });
 
 
-// TODO : videoPost의 주인이 아닌 다른 userId로 요청이 오는 경우 - put과 delete에 대해서
-// AS-IS : SQL query 자체에서 만족하는 조건의 row가 없으면 수정되는 row 없음
-// TO-BE : 요청된 videoPost가 요청한 user의 post인지를 확인?
-
 // modify video post
 router.put('/video', async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
