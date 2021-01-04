@@ -1,5 +1,3 @@
-import tagService from '../service/tagService';
-
 type postVideoParameters = {
     userId: number | null,
     videoId: string | null,
@@ -27,6 +25,38 @@ type postApiError = {
         specific: string | null
     }
 };
+
+
+/*
+  Validation for Tags
+*/
+
+const TAG_MAX_LENGTH = 10;
+const TAG_MAX_NUM = 5;
+
+
+// validation codes
+const TAGS_OKAY = 1;
+const TAGS_TOO_LONG = 0;
+const TAGS_WITH_FORBIDDEN_CHAR = -1;
+const TAGS_TOO_MANY = -2;
+
+
+// patterns
+const TAG_ALLOWED_PATTERN = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-zA-Z|0-9]/;
+const TAG_FORBIDDEN_PATTERN = /[~!@#$%^&*()_+|<>?:{}]/;
+
+
+function validateTags(tags: Array<string>): number {
+    if(tags.length > TAG_MAX_NUM) return TAGS_TOO_MANY;
+
+    for(let i=0;i<tags.length;i++){
+        if(tags[i].length > TAG_MAX_LENGTH) return TAGS_TOO_LONG;
+        if(!(TAG_ALLOWED_PATTERN.test(tags[i]) && !TAG_FORBIDDEN_PATTERN.test(tags[i]))) return TAGS_WITH_FORBIDDEN_CHAR;
+    }
+
+    return TAGS_OKAY;   
+}
 
 
 
@@ -95,28 +125,28 @@ function validatePostVideoParameters(parameters: postVideoParameters): postApiEr
         };
     }
 
-    const tagValidation = tagService.validateTags(parameters.tags);
+    const tagValidation = validateTags(parameters.tags);
 
     // tag errors
-    if(tagValidation == tagService.TAGS_TOO_LONG){
+    if(tagValidation == TAGS_TOO_LONG){
         return {
             error: {
                 message: 'tags_too_long',
-                specific: 'Each tag\'s length should be less or equal than ' + tagService.TAG_MAX_LENGTH.toString(),
+                specific: 'Each tag\'s length should be less or equal than ' + TAG_MAX_LENGTH.toString(),
             }
         };
     }
 
-    if(tagValidation == tagService.TAGS_TOO_MANY){ 
+    if(tagValidation == TAGS_TOO_MANY){ 
         return {
             error: {
                 message: 'tags_too_many',
-                specific: 'The number of tags should be less or equal than ' + tagService.TAG_MAX_NUM.toString(),
+                specific: 'The number of tags should be less or equal than ' + TAG_MAX_NUM.toString(),
             }
         };
     }
 
-    if(tagValidation == tagService.TAGS_WITH_FORBIDDEN_CHAR){ 
+    if(tagValidation == TAGS_WITH_FORBIDDEN_CHAR){ 
         return {
             error: {
                 message: 'tags_with_forbidden_char',
@@ -193,6 +223,35 @@ function validatePutVideoParameters(parameters: putVideoParameters): postApiErro
         };
     }
 
+    const tagValidation = validateTags(parameters.tags);
+
+    // tag errors
+    if(tagValidation == TAGS_TOO_LONG){
+        return {
+            error: {
+                message: 'tags_too_long',
+                specific: 'Each tag\'s length should be less or equal than ' + TAG_MAX_LENGTH.toString(),
+            }
+        };
+    }
+
+    if(tagValidation == TAGS_TOO_MANY){ 
+        return {
+            error: {
+                message: 'tags_too_many',
+                specific: 'The number of tags should be less or equal than ' + TAG_MAX_NUM.toString(),
+            }
+        };
+    }
+
+    if(tagValidation == TAGS_WITH_FORBIDDEN_CHAR){ 
+        return {
+            error: {
+                message: 'tags_with_forbidden_char',
+                specific: 'Only English, Korean, numbers are allowed in tags'
+            }
+        };
+    }
 
     return null;
 }
