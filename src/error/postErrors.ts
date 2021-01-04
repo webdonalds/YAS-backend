@@ -59,6 +59,13 @@ function validateTags(tags: Array<string>): number {
 }
 
 
+/*
+  Validation values for parameters
+*/
+const TITLE_MAX_LENGTH = 100;
+const TITLE_MIN_LENGTH = 2;
+const DESCRIPTION_MAX_LENGTH = 250;
+
 
 // error for : POST - /v1/post/video
 function validatePostVideoParameters(parameters: postVideoParameters): postApiError | null{
@@ -98,29 +105,29 @@ function validatePostVideoParameters(parameters: postVideoParameters): postApiEr
         };
     }
 
-    if (parameters.title.length >= 100) {
+    if (parameters.title.length > TITLE_MAX_LENGTH) {
         return {
             error: {
                 message: 'title_too_long',
-                specific: 'title length should be less than 100',
+                specific: 'title length cannot be longer than ' + TITLE_MAX_LENGTH.toString(),
             }
         };
     }
 
-    if (parameters.title.length <= 1) {
+    if (parameters.title.length < TITLE_MIN_LENGTH) {
         return {
             error: {
                 message: 'title_too_short',
-                specific: 'title length should be more than 2',
+                specific: 'title length cannot be shorter than ' + TITLE_MIN_LENGTH.toString(),
             }
         };
     }
     
-    if (parameters.description.length >= 250) {
+    if (parameters.description.length > DESCRIPTION_MAX_LENGTH) {
         return {
             error: {
                 message: 'description_too_long',
-                specific: 'description length should be less than 250',
+                specific: 'description length cannot be longer than ' + DESCRIPTION_MAX_LENGTH.toString(),
             }
         };
     }
@@ -196,29 +203,29 @@ function validatePutVideoParameters(parameters: putVideoParameters): postApiErro
         };
     }
 
-    if (parameters.title.length >= 100) {
+    if (parameters.title.length > TITLE_MAX_LENGTH) {
         return {
             error: {
                 message: 'title_too_long',
-                specific: 'title length should be less than 100',
+                specific: 'title length cannot be longer than ' + TITLE_MAX_LENGTH.toString(),
             }
         };
     }
 
-    if (parameters.title.length <= 1) {
+    if (parameters.title.length < TITLE_MIN_LENGTH) {
         return {
             error: {
                 message: 'title_too_short',
-                specific: 'title length should be more than 2',
+                specific: 'title length cannot be shorter than ' + TITLE_MIN_LENGTH.toString(),
             }
         };
     }
-
-    if (parameters.description.length >= 250) {
+    
+    if (parameters.description.length > DESCRIPTION_MAX_LENGTH) {
         return {
             error: {
                 message: 'description_too_long',
-                specific: 'description length should be less than 250',
+                specific: 'description length cannot be longer than ' + DESCRIPTION_MAX_LENGTH.toString(),
             }
         };
     }
