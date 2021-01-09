@@ -108,6 +108,7 @@ class GoogleService {
             part: ['snippet'],
             q: keyword,
             pageToken: pageToken,
+            type: ['video'],
         });
         return response.data;
     }
