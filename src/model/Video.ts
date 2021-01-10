@@ -32,6 +32,11 @@ class Video extends Model {
                 description: {
                     type: DataTypes.STRING,
                     allowNull: true
+                },
+                totalLikes: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0
                 }
             },
             {
