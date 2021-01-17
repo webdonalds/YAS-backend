@@ -1,34 +1,5 @@
 import { Video } from '../model/index';
 
-type postVideoParameters = {
-    userId: number | null,
-    videoId: string | null,
-    title: string | null,
-    description: string | null,
-    tags: Array<string> | null
-}
-
-type putVideoParameters = {
-    userId: number | null,
-    videoPostId: number | null,
-    title: string | null,
-    description: string | null,
-    tags: Array<string> | null
-};
-
-type deleteVideoParameters = {
-    userId: number | null,
-    videoPostId: number | null
-}
-
-type postApiError = {
-    error: {
-        message: string,
-        specific: string | null
-    }
-};
-
-
 /*
   Validation for Tags
 */
@@ -85,7 +56,7 @@ async function validateVideoOwner(userId:number, videoPostId:number): Promise<bo
 
 
 // error for : POST - /v1/post/video
-function validatePostVideoParameters(parameters: postVideoParameters): postApiError | null{
+function validatePostVideoParameters(parameters: PostVideoParameters): ApiError | null{
     if(!parameters.userId){
         return {
             error: {
@@ -183,7 +154,7 @@ function validatePostVideoParameters(parameters: postVideoParameters): postApiEr
 }
 
 
-async function validatePutVideoParameters(parameters: putVideoParameters): Promise<postApiError> | null{
+async function validatePutVideoParameters(parameters: PutVideoParameters): Promise<ApiError> | null{
     if(!parameters.userId){
         return {
             error: {
@@ -290,7 +261,7 @@ async function validatePutVideoParameters(parameters: putVideoParameters): Promi
 }
 
 
-async function validateDeleteVideoParameters(parameters: deleteVideoParameters): Promise<postApiError> | null{
+async function validateDeleteVideoParameters(parameters: DeleteVideoParameters): Promise<ApiError> | null{
     if(!parameters.userId){
         return {
             error: {
