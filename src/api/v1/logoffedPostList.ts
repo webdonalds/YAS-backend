@@ -23,9 +23,7 @@ router.get('/recent-videos', async (request: express.Request, response: express.
             ],
             limit: VIDEO_LIST_LIMIT
         });
-    }
-
-    else{
+    } else{
         result = await Video.findAll({
             where:{
                 id: { [Op.lt]: lastPostId }
