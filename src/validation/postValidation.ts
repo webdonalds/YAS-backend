@@ -21,13 +21,6 @@ type deleteVideoParameters = {
     videoPostId: number | null
 }
 
-type postApiError = {
-    error: {
-        message: string,
-        specific: string | null
-    }
-};
-
 
 /*
   Validation for Tags
