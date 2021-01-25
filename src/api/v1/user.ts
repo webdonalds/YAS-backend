@@ -45,26 +45,5 @@ router.put('/user-info', async (request: express.Request, response: express.Resp
     return;
 });
 
-// TODO nickname validation check api
-
-// nickname, imagepath, about-me
-
-router.get('/nickname-validation', async (request: express.Request, response:express.Response) => {
-    const nickname = request.body.nickname;
-    
-    const error = await userInfoValidation.validateNickname(nickname);
-
-    if(error){
-        response.status(400).json(error);
-        return;
-    }
-
-    response.json({
-        message: 'success'
-    });
-
-    return;
-});
-
 
 export default router;
