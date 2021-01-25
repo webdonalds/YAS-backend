@@ -45,8 +45,7 @@ const TAGS_TOO_MANY = -2;
 
 
 // patterns
-const TAG_ALLOWED_PATTERN = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-zA-Z|0-9]/;
-const TAG_FORBIDDEN_PATTERN = /[~!@#$%^&*()_+|<>?:{}]/;
+const TAG_ALLOWED_PATTERN = /^[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-zA-Z|0-9]*$/;
 
 
 function validateTags(tags: Array<string>): number {
@@ -54,7 +53,7 @@ function validateTags(tags: Array<string>): number {
 
     for(let i=0;i<tags.length;i++){
         if(tags[i].length > TAG_MAX_LENGTH) return TAGS_TOO_LONG;
-        if(!(TAG_ALLOWED_PATTERN.test(tags[i]) && !TAG_FORBIDDEN_PATTERN.test(tags[i]))) return TAGS_WITH_FORBIDDEN_CHAR;
+        if(!TAG_ALLOWED_PATTERN.test(tags[i])) return TAGS_WITH_FORBIDDEN_CHAR;
     }
 
     return TAGS_OKAY;   
