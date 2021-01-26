@@ -5,6 +5,27 @@ import postValidation from '../../validation/postValidation';
 
 const router = express.Router();
 
+// get video
+router.get('/video/:videoId', async (request: express.Request, response: express.Response) => {
+    const videoId = Number(request.params.videoId);
+    if(isNaN(videoId)) {
+        response.status(400).json({
+            message: 'invalid_id'
+        });
+        return;
+    }
+
+    const video = await Video.findByPk(videoId);
+    if(video == null) {
+        response.status(400).json({
+            message: 'not_found'
+        });
+        return;
+    }
+    // for security
+    video.userId = null;
+    response.json(video);
+});
 
 // post video
 router.post('/video', async (request: express.Request, response: express.Response) => {
