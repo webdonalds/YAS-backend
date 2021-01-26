@@ -7,13 +7,17 @@ const NICKNAME_MIN_LENGTH = 2;
 const ABOUTME_MAX_LENGTH = 100;
 
 
-async function isDuplicatedNickname(nickname: string): Promise<boolean> {
+async function isDuplicatedNickname(nickname: string, id: number): Promise<boolean> {
     const result = await User.findOne({
         where: { nickname: nickname }
     });
 
     if(result==null){
         return false;
+    } else {
+        if(result.id == id){
+            return false;
+        }
     }
 
     return true;
@@ -66,7 +70,7 @@ async function validateUserInfoParameters(parameters: userInfoParameters): Promi
         };
     }
 
-    if(isDuplicatedNickname(parameters.nickname)){
+    if(await isDuplicatedNickname(parameters.nickname, parameters.userId)){
         return {
             error: {
                 message: 'nickname_already_exists',
