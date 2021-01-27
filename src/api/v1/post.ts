@@ -10,7 +10,10 @@ router.get('/video/:videoId', async (request: express.Request, response: express
     const videoId = Number(request.params.videoId);
     if(isNaN(videoId)) {
         response.status(400).json({
-            message: 'invalid_id'
+            error: {
+                message: 'invalid_id',
+                specific: null,
+            }
         });
         return;
     }
@@ -18,7 +21,10 @@ router.get('/video/:videoId', async (request: express.Request, response: express
     const video = await Video.findByPk(videoId);
     if(video == null) {
         response.status(400).json({
-            message: 'not_found'
+            error: {
+                message: 'not_found',
+                specific: null,
+            }
         });
         return;
     }
