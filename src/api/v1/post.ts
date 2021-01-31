@@ -2,6 +2,7 @@ import * as express from 'express';
 import { Video } from '../../model/index';
 import tagService from '../../service/tagService';
 import postValidation from '../../validation/postValidation';
+import { Op } from 'sequelize';
 
 const router = express.Router();
 
@@ -32,6 +33,67 @@ router.get('/video/:videoId', async (request: express.Request, response: express
     video.userId = null;
     response.json(video);
 });
+
+
+const USER_VIDEO_LIMIT = 3;
+
+
+// get videos of specific user
+router.get('/user-videos/:userId', async (request: express.Request, response: express.Response) => {
+    const ownerId = Number(request.params.userId);
+    
+    // if no userId parameter is given, use id of api caller
+    if(isNaN(ownerId)){
+        response.status(400).json({
+            error: {
+                message: 'invalid_id',
+                specific: null,
+            }
+        });
+        return;
+    }
+
+    const lastPostId = parseInt(request.query.pageToken as string);
+
+    let result;
+
+    if(isNaN(lastPostId)){
+        result = await Video.findAll({
+            where: {
+                userId: ownerId
+            },
+            order: [
+                ['id', 'DESC']
+            ],
+            limit: USER_VIDEO_LIMIT
+        });
+    } else{
+        result = await Video.findAll({
+            where:{
+                id: { [Op.lt]: lastPostId },
+                userId: ownerId
+            },
+            order: [
+                ['id', 'DESC']
+            ],
+            limit: USER_VIDEO_LIMIT
+        });
+    }
+
+    const userVideos = [];
+
+    for(let i=0;i<result.length;i++){
+        userVideos.push(result[i].dataValues);
+    }
+
+    response.json({
+        videoList: userVideos,
+        pageToken: userVideos.length > 0 ? userVideos[userVideos.length - 1].id : null
+    });
+
+    return;
+});
+
 
 // post video
 router.post('/video', async (request: express.Request, response: express.Response) => {
