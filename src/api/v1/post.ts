@@ -6,9 +6,9 @@ import postValidation from '../../validation/postValidation';
 const router = express.Router();
 
 // get video
-router.get('/video/:videoId', async (request: express.Request, response: express.Response) => {
-    const videoId = Number(request.params.videoId);
-    if(isNaN(videoId)) {
+router.get('/video/:postId', async (request: express.Request, response: express.Response) => {
+    const postId = Number(request.params.postId);
+    if(isNaN(postId)) {
         response.status(400).json({
             error: {
                 message: 'invalid_id',
@@ -18,7 +18,7 @@ router.get('/video/:videoId', async (request: express.Request, response: express
         return;
     }
 
-    const video = await Video.findByPk(videoId);
+    const video = await Video.findByPk(postId);
     if(video == null) {
         response.status(400).json({
             error: {
