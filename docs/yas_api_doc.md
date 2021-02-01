@@ -222,6 +222,7 @@ Upload video post
 | videoId     | VIDEO_ID         | O        |
 | title       | POST_TITLE       | O        |
 | description | POST_DESCRIPTION | X        |
+| tags        | [TAG]            | X        |
 
 
 
@@ -266,9 +267,10 @@ Modify title/description of the video post
 
 | KEY         | VALUE            | REQUIRED |
 | ----------- | ---------------- | -------- |
-| videoId     | VIDEO_ID         | O        |
+| videoPostId | VIDEO_POST_ID    | O        |
 | title       | POST_TITLE       | O        |
 | description | POST_DESCRIPTION | X        |
+| tags        | [TAG]            | X        |
 
 
 
@@ -294,9 +296,9 @@ Content:
 
 
 
-## PUT - /v1/post/video
+## DELETE - /v1/post/video
 
-Modify title/description of the video post
+Delete video post
 
 
 
