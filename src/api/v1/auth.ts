@@ -96,7 +96,7 @@ router.get('/login', async (request: express.Request, response: express.Response
         id: result.id,
         email: result.email,
         nickname: result.nickname,
-        imagePath: result.imagePath,
+        imageFile: result.imageFile,
         aboutMe: result.aboutMe,
     };
 

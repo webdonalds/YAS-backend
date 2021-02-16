@@ -5,7 +5,7 @@ class User extends Model {
     public userId!: number;
     public nickname!: string;
     public email!: string;
-    public imagePath: string;
+    public imageFile: string;
     public aboutMe: string;
     public googleRefreshToken: string;
     public registered: boolean;
@@ -35,8 +35,8 @@ class User extends Model {
                     allowNull: false,
                     unique: true
                 },
-                imagePath: {
-                    type: DataTypes.STRING,
+                imageFile: {
+                    type: DataTypes.TEXT,
                     allowNull: true
                 },
                 aboutMe: {
