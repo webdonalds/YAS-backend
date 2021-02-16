@@ -46,6 +46,39 @@ router.put('/user-info', async (request: express.Request, response: express.Resp
 });
 
 
+router.put('/profile-image', async (request: express.Request, response: express.Response) => {
+    const userId = request.body.userInfo ? request.body.userInfo.userId : null;
+    const imageFile = request.body.imageFile ? request.body.imageFile : null;
+
+    if(!imageFile){
+        response.status(400).json({
+            error: {
+                message: 'require_body_parameter_imageFile',
+                specific: null
+            }
+        });
+        return;
+    }
+
+    await User.update(
+        {
+            imageFile: imageFile
+        },
+        {
+            where: {
+                id: userId
+            }
+        }
+    );
+
+    response.json({
+        message: 'success'
+    });
+
+    return;
+});
+
+
 router.get('/user-info', async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
 
@@ -75,7 +108,7 @@ router.get('/user-info', async (request: express.Request, response: express.Resp
         id: userInfo.id,
         email: userInfo.email,
         nickname: userInfo.nickname,
-        imagePath: userInfo.imagePath,
+        imageFile: userInfo.imageFile,
         aboutMe: userInfo.aboutMe
     });
 
