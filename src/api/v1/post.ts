@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Video } from '../../model/index';
+import { Tag, Video } from '../../model/index';
 import tagService from '../../service/tagService';
 import postValidation from '../../validation/postValidation';
 import { Op } from 'sequelize';
@@ -7,9 +7,9 @@ import { Op } from 'sequelize';
 const router = express.Router();
 
 // get video
-router.get('/video/:postId', async (request: express.Request, response: express.Response) => {
-    const postId = Number(request.params.postId);
-    if(isNaN(postId)) {
+router.get('/video/:videoId', async (request: express.Request, response: express.Response) => {
+    const videoId = Number(request.params.videoId);
+    if(isNaN(videoId)) {
         response.status(400).json({
             error: {
                 message: 'invalid_id',
@@ -19,7 +19,11 @@ router.get('/video/:postId', async (request: express.Request, response: express.
         return;
     }
 
-    const video = await Video.findByPk(postId);
+    const video = await Video.findByPk(videoId, {
+        include: {
+            model: Tag,
+        }
+    });
     if(video == null) {
         response.status(400).json({
             error: {
