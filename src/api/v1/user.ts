@@ -50,10 +50,10 @@ router.put('/profile-image', async (request: express.Request, response: express.
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
     const imageFile = request.body.imageFile ? request.body.imageFile : null;
 
-    if(!imageFile){
+    if(!userId){
         response.status(400).json({
             error: {
-                message: 'require_body_parameter_imageFile',
+                message: 'require_userId',
                 specific: null
             }
         });
