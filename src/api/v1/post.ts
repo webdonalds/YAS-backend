@@ -4,6 +4,8 @@ import tagService from '../../service/tagService';
 import postValidation from '../../validation/postValidation';
 import { Op } from 'sequelize';
 
+import middleware from '../middleware';
+
 const router = express.Router();
 
 // get video
@@ -100,7 +102,7 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
 
 
 // post video
-router.post('/video', async (request: express.Request, response: express.Response) => {
+router.post('/video', middleware.validateToken, async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
     const videoId = request.body.videoId;
     const title = request.body.title;
@@ -145,7 +147,7 @@ router.post('/video', async (request: express.Request, response: express.Respons
 
 
 // modify video post
-router.put('/video', async (request: express.Request, response: express.Response) => {
+router.put('/video', middleware.validateToken, async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
     const videoPostId = request.body.videoPostId;
     const title = request.body.title;
@@ -198,7 +200,7 @@ router.put('/video', async (request: express.Request, response: express.Response
 
 
 // delete video
-router.delete('/video', async (request: express.Request, response: express.Response) => {
+router.delete('/video', middleware.validateToken, async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
     const videoPostId = request.body.videoPostId;
 
