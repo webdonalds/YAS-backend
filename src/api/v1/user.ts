@@ -48,7 +48,7 @@ router.put('/user-info', async (request: express.Request, response: express.Resp
 
 router.put('/profile-image', async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
-    const imageFile = request.body.imageFile ? request.body.imageFile : null;
+    const imagePath = request.body.imagePath ? request.body.imagePath : null;
 
     if(!userId){
         response.status(400).json({
@@ -60,9 +60,19 @@ router.put('/profile-image', async (request: express.Request, response: express.
         return;
     }
 
+    if(imagePath && imagePath.length > 1000000){
+        response.status(400).json({
+            error: {
+                message: 'image_file_too_big',
+                specific: 'image file length should be less than 1000000'
+            }
+        });
+        return;
+    }
+
     await User.update(
         {
-            imageFile: imageFile
+            imagePath: imagePath
         },
         {
             where: {
@@ -108,7 +118,7 @@ router.get('/user-info', async (request: express.Request, response: express.Resp
         id: userInfo.id,
         email: userInfo.email,
         nickname: userInfo.nickname,
-        imageFile: userInfo.imageFile,
+        imagePath: userInfo.imagePath,
         aboutMe: userInfo.aboutMe
     });
 
