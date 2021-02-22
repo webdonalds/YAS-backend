@@ -29,6 +29,7 @@ models.forEach(model => model.initialize(sequelize));
 
 // User - Video Association
 User.hasMany(Video, { foreignKey: 'userId' });
+Video.belongsTo(User, { foreignKey: 'userId' });
 
 
 // User - Token Association

@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Tag, Video } from '../../model/index';
+import { Tag, User, Video } from '../../model/index';
 import tagService from '../../service/tagService';
 import postValidation from '../../validation/postValidation';
 import { Op } from 'sequelize';
@@ -20,9 +20,11 @@ router.get('/video/:videoId', async (request: express.Request, response: express
     }
 
     const video = await Video.findByPk(videoId, {
-        include: {
+        include: [{
             model: Tag,
-        }
+        }, {
+            model: User,
+        }]
     });
     if(video == null) {
         response.status(400).json({
@@ -33,8 +35,6 @@ router.get('/video/:videoId', async (request: express.Request, response: express
         });
         return;
     }
-    // for security
-    video.userId = null;
     response.json(video);
 });
 
