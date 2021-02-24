@@ -14,7 +14,9 @@ Database.sync();
 app.use(cors());
 
 // add router
-app.use(express.json());
+app.use(express.json({
+    limit : '10mb'
+}));
 app.use(index);
 
 

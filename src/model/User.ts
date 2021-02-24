@@ -1,4 +1,4 @@
-import { Sequelize, Model, DataTypes } from 'sequelize';
+import { Sequelize, Model, DataTypes, TextDataTypeOptions } from 'sequelize';
 
 class User extends Model {
     public id!: number;
@@ -36,7 +36,7 @@ class User extends Model {
                     unique: true
                 },
                 imagePath: {
-                    type: DataTypes.STRING,
+                    type: DataTypes.TEXT('medium' as unknown as TextDataTypeOptions),
                     allowNull: true
                 },
                 aboutMe: {

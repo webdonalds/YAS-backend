@@ -46,6 +46,49 @@ router.put('/user-info', async (request: express.Request, response: express.Resp
 });
 
 
+router.put('/profile-image', async (request: express.Request, response: express.Response) => {
+    const userId = request.body.userInfo ? request.body.userInfo.userId : null;
+    const imagePath = request.body.imagePath ? request.body.imagePath : null;
+
+    if(!userId){
+        response.status(400).json({
+            error: {
+                message: 'require_userId',
+                specific: null
+            }
+        });
+        return;
+    }
+
+    if(imagePath && imagePath.length > 1000000){
+        response.status(400).json({
+            error: {
+                message: 'image_file_too_big',
+                specific: 'image file length should be less than 1000000'
+            }
+        });
+        return;
+    }
+
+    await User.update(
+        {
+            imagePath: imagePath
+        },
+        {
+            where: {
+                id: userId
+            }
+        }
+    );
+
+    response.json({
+        message: 'success'
+    });
+
+    return;
+});
+
+
 router.get('/user-info', async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
 
