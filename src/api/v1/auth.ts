@@ -129,9 +129,7 @@ router.get('/login', async (request: express.Request, response: express.Response
 
 
 router.get('/access-token', async (request: express.Request, response: express.Response) => {
-
-    const encryptedRefreshToken: string = (request.headers['x-access-token'] || request.query.token) as string;
-
+    const encryptedRefreshToken: string = request.query.token as string;
 
     // if token does not exist
     if (!encryptedRefreshToken) {
