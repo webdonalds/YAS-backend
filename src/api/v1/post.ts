@@ -71,7 +71,12 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
             order: [
                 ['id', 'DESC']
             ],
-            limit: USER_VIDEO_LIMIT
+            limit: USER_VIDEO_LIMIT,
+            include: [{
+                model: Tag
+            },{
+                model: User
+            }]
         });
     } else{
         result = await Video.findAll({
@@ -82,7 +87,12 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
             order: [
                 ['id', 'DESC']
             ],
-            limit: USER_VIDEO_LIMIT
+            limit: USER_VIDEO_LIMIT,
+            include: [{
+                model: Tag,
+            },{
+                model: User
+            }]
         });
     }
 

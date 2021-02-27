@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Video } from '../../model/index';
+import { Video, Tag, User } from '../../model/index';
 import { Op } from 'sequelize';
 
 const router = express.Router();
@@ -21,7 +21,12 @@ router.get('/recent-videos', async (request: express.Request, response: express.
             order: [
                 ['id', 'DESC']
             ],
-            limit: VIDEO_LIST_LIMIT
+            limit: VIDEO_LIST_LIMIT,
+            include: [{
+                model: Tag
+            }, {
+                model: User
+            }]
         });
     } else{
         result = await Video.findAll({
@@ -31,7 +36,12 @@ router.get('/recent-videos', async (request: express.Request, response: express.
             order: [
                 ['id', 'DESC']
             ],
-            limit: VIDEO_LIST_LIMIT
+            limit: VIDEO_LIST_LIMIT,
+            include: [{
+                model: Tag,
+            }, {
+                model: User,
+            }]
         });
     }
 
@@ -56,7 +66,12 @@ router.get('/hot-videos', async (request: express.Request, response: express.Res
         order: [
             ['totalLikes', 'DESC']
         ],
-        limit: HOT_VIDEO_LIST_LIMIT
+        limit: HOT_VIDEO_LIST_LIMIT,
+        include: [{
+            model: Tag,
+        }, {
+            model: User,
+        }]
     });
 
     const hotVideoList = [];
