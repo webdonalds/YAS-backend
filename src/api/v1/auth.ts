@@ -3,6 +3,7 @@ import googleService from '../../service/googleService';
 import tokenService from '../../service/tokenService';
 
 import { User, Token } from '../../model/index';
+import { errorSend } from '../../error/errorUtil';
 
 const router = express.Router();
 
@@ -11,11 +12,7 @@ router.get('/login', async (request: express.Request, response: express.Response
 
     // when no code is returned
     if (code == null) {
-        response.status(400).json({
-            error: {
-                message: 'require_url_parameter_code',
-            }
-        });
+        errorSend(response, 'require_url_parameter_code', null);
         return;
     }
 
@@ -25,71 +22,57 @@ router.get('/login', async (request: express.Request, response: express.Response
     try {
         googleTokens = await googleService.getTokens(code);
     } catch (error) {
-        response.status(400).json({
-            error: {
-                message: 'invalid_code',
-                specific: error,
-            }
-        });
+        errorSend(response, 'invalid_code', error);
         return;
     }
 
     // if no access_token is returned, then something went wrong
     if (!('access_token' in googleTokens)) {
-        response.status(400).json({
-            error: {
-                message: 'invalid_code_no_access_token',
-                specific: 'Access token was not returned'
-            }
-        });
+        errorSend(response, 'invalid_code_no_access_token', 'Access token was not returned');
         return;
     }
 
-    const userInfo = await googleService.getUserInfo(googleTokens.access_token);
 
+    const userInfo = await googleService.getUserInfo(googleTokens.access_token);
 
     let result = await User.findOne({
         where: { email: userInfo.email }
     });
 
-
-    if (result == null) {
-        if (!('refresh_token' in googleTokens)) {
-            response.status(400).json({
-                error: {
-                    message: 'user_not_found',
-                }
-            });
-
-            return;
-        }
-        else {
+    // TODO: error handling => rollback? transaction?
+    try {
+        if (result == null) {
+            if (!('refresh_token' in googleTokens)) {
+                errorSend(response, 'user_not_found', null);
+                return;
+            }
             await User.create({
                 userId: userInfo.id,
                 email: userInfo.email,
                 nickname: userInfo.email.split('@')[0],
                 googleRefreshToken: googleTokens.refresh_token,
             });
-
             result = await User.findOne({
                 where: { email: userInfo.email }
             });
         }
-    }
-    else {
-        // if new refresh_token is given, update to new one
-        if ('refresh_token' in googleTokens) {
-            await User.update(
-                {
-                    googleRefreshToken: googleTokens.refresh_token
-                },
-                {
-                    where: {
-                        email: userInfo.email
+        else {
+            // if new refresh_token is given, update to new one
+            if ('refresh_token' in googleTokens) {
+                await User.update(
+                    {
+                        googleRefreshToken: googleTokens.refresh_token
+                    },
+                    {
+                        where: {
+                            email: userInfo.email
+                        }
                     }
-                }
-            );
+                );
+            }
         }
+    } catch(e) {
+        errorSend(response, 'internal_server_error', e);
     }
 
     const data = {
@@ -111,17 +94,20 @@ router.get('/login', async (request: express.Request, response: express.Response
         yasRefreshToken: yasRefreshToken
     };
 
-    await Token.create({
-        userId: result.id,
-        yasToken: yasToken,
-        yasSecretKey: yasSecretKey
-    });
+    try {
+        await Token.create({
+            userId: result.id,
+            yasToken: yasToken,
+            yasSecretKey: yasSecretKey
+        });
+    } catch(e) {
+        errorSend(response, 'fail_create_token', null);
+    }
 
     response.json({
         data: data,
         auth: auth,
     });
-
     return;
 });
 
@@ -133,51 +119,35 @@ router.get('/access-token', async (request: express.Request, response: express.R
 
     // if token does not exist
     if (!encryptedRefreshToken) {
-        response.status(400).json({
-            error: {
-                message: 'no_refresh_token',
-            }
-        });
+        errorSend(response, 'no_refresh_token', null);
         return;
     }
 
     const {yasToken, type} = tokenService.extractPayloadFromToken(encryptedRefreshToken);
 
     if (yasToken == null) {
-        response.status(400).json({
-            error: {
-                message: 'invalid_refresh_token',
-                specific: 'payload not extracted from token'
-            }
-        });
+        errorSend(response, 'invalid_refresh_token', 'payload not extracted from token');
         return;
     }
 
     // need to give refresh type token
     if (type != 'refresh'){
-        response.status(400).json({
-            error:{
-                message: 'wrong_token_type',
-                specific: 'require token type : refresh'
-            }
-        });
+        errorSend(response, 'wrong_token_type', 'require token type : refresh');
         return;
     }
 
-
-    const tokenInfo = await Token.findOne({
-        where: { yasToken: yasToken }
-    });
-
+    let tokenInfo;
+    try {
+        tokenInfo = await Token.findOne({
+            where: { yasToken: yasToken }
+        });
+    } catch(e) {
+        errorSend(response, 'cannot_find_token', null);
+    }
 
     // no token found from database
     if (tokenInfo == null) {
-        response.status(400).json({
-            error: {
-                message: 'invalid_refresh_token',
-                specific: 'no refresh token found in DB'
-            }
-        });
+        errorSend(response, 'invalid_refresh_token', 'no refresh token found in DB');
         return;
     }
 
@@ -187,31 +157,15 @@ router.get('/access-token', async (request: express.Request, response: express.R
         response.json({
             yasAccessToken: tokenService.makeYasAccessToken(yasToken, tokenInfo.yasSecretKey)
         });
-        return;
-    }
-    else if (validity == tokenService.TOKEN_INVALID) {
-        response.status(400).json({
-            error: {
-                message: 'invalid_refresh_token',
-                specific: 'not valid jwt refresh token'
-            }
-        });
-        return;
-    }
-    else if (validity == tokenService.TOKEN_EXPIRED) {
-        response.status(400).json({
-            error: {
-                message: 'refresh_token_expired',
-            }
-        });
-
+    } else if (validity == tokenService.TOKEN_INVALID) {
+        errorSend(response, 'invalid_refresh_token', 'not valid jwt refresh token');
+    } else if (validity == tokenService.TOKEN_EXPIRED) {
+        errorSend(response, 'refresh_token_expired', null);
         await Token.destroy({ 
             where: { yasToken: yasToken } 
         });
-        return;
     }
-
-
+    return;
 });
 
 export default router;

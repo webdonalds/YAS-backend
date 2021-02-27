@@ -5,6 +5,7 @@ import postValidation from '../../validation/postValidation';
 import { Op } from 'sequelize';
 
 import middleware from '../middleware';
+import { errorSend } from '../../error/errorUtil';
 
 const router = express.Router();
 
@@ -12,32 +13,25 @@ const router = express.Router();
 router.get('/video/:videoId', async (request: express.Request, response: express.Response) => {
     const videoId = Number(request.params.videoId);
     if(isNaN(videoId)) {
-        response.status(400).json({
-            error: {
-                message: 'invalid_id',
-                specific: null,
-            }
-        });
+        errorSend(response, 'invalid_id', null);
         return;
     }
 
-    const video = await Video.findByPk(videoId, {
-        include: [{
-            model: Tag,
-        }, {
-            model: User,
-        }]
-    });
-    if(video == null) {
-        response.status(400).json({
-            error: {
-                message: 'not_found',
-                specific: null,
-            }
+    try {
+        const video = await Video.findByPk(videoId, {
+            include: [{
+                model: Tag,
+            }, {
+                model: User,
+            }]
         });
-        return;
+        if(video == null) {
+            throw 'not_found';
+        }
+        response.json(video);
+    } catch (e) {
+        errorSend(response, 'not_found', null);
     }
-    response.json(video);
 });
 
 
@@ -50,12 +44,7 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
     
     // if no userId parameter is given, use id of api caller
     if(isNaN(ownerId)){
-        response.status(400).json({
-            error: {
-                message: 'invalid_id',
-                specific: null,
-            }
-        });
+        errorSend(response, 'invalid_id', null);
         return;
     }
 
@@ -63,27 +52,31 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
 
     let result;
 
-    if(isNaN(lastPostId)){
-        result = await Video.findAll({
-            where: {
-                userId: ownerId
-            },
-            order: [
-                ['id', 'DESC']
-            ],
-            limit: USER_VIDEO_LIMIT
-        });
-    } else{
-        result = await Video.findAll({
-            where:{
-                id: { [Op.lt]: lastPostId },
-                userId: ownerId
-            },
-            order: [
-                ['id', 'DESC']
-            ],
-            limit: USER_VIDEO_LIMIT
-        });
+    try {
+        if(isNaN(lastPostId)){
+            result = await Video.findAll({
+                where: {
+                    userId: ownerId
+                },
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit: USER_VIDEO_LIMIT
+            });
+        } else{
+            result = await Video.findAll({
+                where:{
+                    id: { [Op.lt]: lastPostId },
+                    userId: ownerId
+                },
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit: USER_VIDEO_LIMIT
+            });
+        }
+    } catch(e) {
+        errorSend(response, 'not_found', null);
     }
 
     const userVideos = [];
@@ -96,7 +89,6 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
         videoList: userVideos,
         pageToken: userVideos.length > 0 ? userVideos[userVideos.length - 1].id : null
     });
-
     return;
 });
 
@@ -117,7 +109,6 @@ router.post('/video', middleware.validateToken, async (request: express.Request,
         tags: tags
     };
 
-
     const error = postValidation.validatePostVideoParameters(parameters);
     
     if(error){
@@ -125,23 +116,24 @@ router.post('/video', middleware.validateToken, async (request: express.Request,
         return;
     }
     
+    try {
+        const result = await Video.create({
+            videoId: videoId,
+            userId: userId,
+            title: title,
+            description: description,
+        });
 
-    const result = await Video.create({
-        videoId: videoId,
-        userId: userId,
-        title: title,
-        description: description,
-    });
-
-
-    const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
-    tagService.addVideoHasTag(result.id, tagIds);
-
+        // TODO: error handling => rollback? transaction?
+        const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
+        tagService.addVideoHasTag(result.id, tagIds);
     
-    response.json({
-        postId: result.id
-    });
-
+        response.json({
+            postId: result.id
+        });
+    } catch(e) {
+        errorSend(response, 'internal_server_error', e);
+    }
     return;
 });
 
@@ -162,39 +154,39 @@ router.put('/video', middleware.validateToken, async (request: express.Request, 
         tags: tags
     };
 
+    // TODO: error handling => rollback? transaction?
+    try {
+        const error = await postValidation.validatePutVideoParameters(parameters);
 
-    const error = await postValidation.validatePutVideoParameters(parameters);
-
-    if(error){
-        response.status(400).json(error);
-        return;
-    }
-
-
-    await Video.update(
-        {
-            title: title,
-            description: description
-        },
-        {
-            where: {
-                id: videoPostId,
-                userId: userId
-            }
+        if(error){
+            response.status(400).json(error);
+            return;
         }
-    );
 
+        await Video.update(
+            {
+                title: title,
+                description: description
+            },
+            {
+                where: {
+                    id: videoPostId,
+                    userId: userId
+                }
+            }
+        );
 
-    // update tags
-    const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
-    await tagService.deleteVideoHasTag(videoPostId);
-    tagService.addVideoHasTag(videoPostId, tagIds);
-    
+        // update tags
+        const tagIds = await tagService.storeTagsIfNewAndGetTagIds(tags);
+        await tagService.deleteVideoHasTag(videoPostId);
+        tagService.addVideoHasTag(videoPostId, tagIds);
+    } catch(e) {
+        errorSend(response, 'internal_server_error', null);
+    }
 
     response.json({
         message: 'success',
     });
-
     return;
 });
 
@@ -209,29 +201,30 @@ router.delete('/video', middleware.validateToken, async (request: express.Reques
         videoPostId: videoPostId
     };
 
+    // TODO: error handling => rollback? transaction?
+    try {
+        const error = await postValidation.validateDeleteVideoParameters(parameters);
 
-    const error = await postValidation.validateDeleteVideoParameters(parameters);
+        if(error){
+            response.status(400).json(error);
+            return;
+        }
 
-    if(error){
-        response.status(400).json(error);
-        return;
+
+        await Video.destroy({ 
+            where: { 
+                userId: userId,
+                id: videoPostId
+            } 
+        });
+        // video_has_tag will be deleted automatically by Database setting.
+    } catch(e) {
+        errorSend(response, 'internal_server_error', null);
     }
-
-
-    await Video.destroy({ 
-        where: { 
-            userId: userId,
-            id: videoPostId
-        } 
-    });
-    // video_has_tag will be deleted automatically by Database setting.
-
     
     response.json({
         message: 'success',
     });
-
-
     return;
 });
 
