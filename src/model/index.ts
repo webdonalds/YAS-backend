@@ -18,7 +18,11 @@ const sequelize = new Sequelize(
     config.database.databasePassword,
     {
         host: config.database.databaseEndpoint,
-        dialect: 'mariadb'
+        dialect: 'mariadb',
+        define: {
+            charset: 'utf8',
+            collate: 'utf8_general_ci',
+        }
     }
 );
 

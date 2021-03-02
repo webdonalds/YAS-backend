@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { Video, Tag, User } from '../../model/index';
 import { Op } from 'sequelize';
+import { errorSend } from '../../error/errorUtil';
 
 const router = express.Router();
 
@@ -16,33 +17,37 @@ router.get('/recent-videos', async (request: express.Request, response: express.
     
     let result;
 
-    if(isNaN(lastPostId)){
-        result = await Video.findAll({
-            order: [
-                ['id', 'DESC']
-            ],
-            limit: VIDEO_LIST_LIMIT,
-            include: [{
-                model: Tag
-            }, {
-                model: User
-            }]
-        });
-    } else{
-        result = await Video.findAll({
-            where:{
-                id: { [Op.lt]: lastPostId }
-            },
-            order: [
-                ['id', 'DESC']
-            ],
-            limit: VIDEO_LIST_LIMIT,
-            include: [{
-                model: Tag,
-            }, {
-                model: User,
-            }]
-        });
+    try {
+        if(isNaN(lastPostId)){
+            result = await Video.findAll({
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit: VIDEO_LIST_LIMIT,
+                include: [{
+                    model: Tag
+                }, {
+                    model: User
+                }]
+            });
+        } else{
+            result = await Video.findAll({
+                where:{
+                    id: { [Op.lt]: lastPostId }
+                },
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit: VIDEO_LIST_LIMIT,
+                include: [{
+                    model: Tag,
+                }, {
+                    model: User,
+                }]
+            });
+        }
+    } catch(e) {
+        errorSend(response, 'fail_get_video', null);
     }
 
     const recentVideoList = [];
@@ -55,35 +60,37 @@ router.get('/recent-videos', async (request: express.Request, response: express.
         videoList: recentVideoList,
         pageToken: recentVideoList.length > 0 ? recentVideoList[recentVideoList.length - 1].id : null
     });
-
     return;
 });
 
 
 // get hot posts
 router.get('/hot-videos', async (request: express.Request, response: express.Response) => {
-    const result = await Video.findAll({
-        order: [
-            ['totalLikes', 'DESC']
-        ],
-        limit: HOT_VIDEO_LIST_LIMIT,
-        include: [{
-            model: Tag,
-        }, {
-            model: User,
-        }]
-    });
+    try {
+        const result = await Video.findAll({
+            order: [
+                ['totalLikes', 'DESC']
+            ],
+            limit: HOT_VIDEO_LIST_LIMIT,
+            include: [{
+                model: Tag,
+            }, {
+                model: User,
+            }]
+        });
 
-    const hotVideoList = [];
+        const hotVideoList = [];
 
-    for(let i=0;i<result.length;i++){
-        hotVideoList.push(result[i]);
+        for(let i=0;i<result.length;i++){
+            hotVideoList.push(result[i]);
+        }
+
+        response.json({
+            videoList: hotVideoList
+        });
+    } catch(e) {
+        errorSend(response, 'fail_get_video', null);
     }
-
-    response.json({
-        videoList: hotVideoList
-    });
-
     return;
 });
 
