@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Video } from '../../model/index';
+import { Video, Tag, User } from '../../model/index';
 import { Op } from 'sequelize';
 import { errorSend } from '../../error/errorUtil';
 
@@ -16,13 +16,19 @@ router.get('/recent-videos', async (request: express.Request, response: express.
     const lastPostId = parseInt(request.query.pageToken as string);
     
     let result;
+
     try {
         if(isNaN(lastPostId)){
             result = await Video.findAll({
                 order: [
                     ['id', 'DESC']
                 ],
-                limit: VIDEO_LIST_LIMIT
+                limit: VIDEO_LIST_LIMIT,
+                include: [{
+                    model: Tag
+                }, {
+                    model: User
+                }]
             });
         } else{
             result = await Video.findAll({
@@ -32,7 +38,12 @@ router.get('/recent-videos', async (request: express.Request, response: express.
                 order: [
                     ['id', 'DESC']
                 ],
-                limit: VIDEO_LIST_LIMIT
+                limit: VIDEO_LIST_LIMIT,
+                include: [{
+                    model: Tag,
+                }, {
+                    model: User,
+                }]
             });
         }
     } catch(e) {
@@ -60,7 +71,12 @@ router.get('/hot-videos', async (request: express.Request, response: express.Res
             order: [
                 ['totalLikes', 'DESC']
             ],
-            limit: HOT_VIDEO_LIST_LIMIT
+            limit: HOT_VIDEO_LIST_LIMIT,
+            include: [{
+                model: Tag,
+            }, {
+                model: User,
+            }]
         });
 
         const hotVideoList = [];

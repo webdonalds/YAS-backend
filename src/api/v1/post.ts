@@ -51,7 +51,7 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
     const lastPostId = parseInt(request.query.pageToken as string);
 
     let result;
-
+  
     try {
         if(isNaN(lastPostId)){
             result = await Video.findAll({
@@ -61,7 +61,12 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
                 order: [
                     ['id', 'DESC']
                 ],
-                limit: USER_VIDEO_LIMIT
+                limit: USER_VIDEO_LIMIT,
+                include: [{
+                    model: Tag
+                },{
+                    model: User
+                }]
             });
         } else{
             result = await Video.findAll({
@@ -72,7 +77,12 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
                 order: [
                     ['id', 'DESC']
                 ],
-                limit: USER_VIDEO_LIMIT
+                limit: USER_VIDEO_LIMIT,
+                include: [{
+                    model: Tag,
+                },{
+                    model: User
+                }]
             });
         }
     } catch(e) {
