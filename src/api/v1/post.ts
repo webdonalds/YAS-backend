@@ -87,6 +87,7 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
         }
     } catch(e) {
         errorSend(response, 'not_found', null);
+        return;
     }
 
     const userVideos = [];
@@ -143,6 +144,7 @@ router.post('/video', middleware.validateToken, async (request: express.Request,
         });
     } catch(e) {
         errorSend(response, 'internal_server_error', e);
+        return;
     }
     return;
 });
@@ -192,6 +194,7 @@ router.put('/video', middleware.validateToken, async (request: express.Request, 
         tagService.addVideoHasTag(videoPostId, tagIds);
     } catch(e) {
         errorSend(response, 'internal_server_error', null);
+        return;
     }
 
     response.json({
@@ -230,6 +233,7 @@ router.delete('/video', middleware.validateToken, async (request: express.Reques
         // video_has_tag will be deleted automatically by Database setting.
     } catch(e) {
         errorSend(response, 'internal_server_error', null);
+        return;
     }
     
     response.json({
