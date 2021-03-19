@@ -9,10 +9,12 @@ class Like extends Model {
             {
                 userId: {
                     type: DataTypes.INTEGER,
+                    primaryKey: true,
                     allowNull: false
                 },
                 videoId: {
                     type: DataTypes.INTEGER,
+                    primaryKey: true,
                     allowNull: false
                 }
             },

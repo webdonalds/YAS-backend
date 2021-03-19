@@ -48,6 +48,7 @@ router.get('/recent-videos', async (request: express.Request, response: express.
         }
     } catch(e) {
         errorSend(response, 'fail_get_video', null);
+        return;
     }
 
     const recentVideoList = [];

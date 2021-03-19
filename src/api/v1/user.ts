@@ -38,6 +38,7 @@ router.put('/user-info', async (request: express.Request, response: express.Resp
         );
     } catch(e) {
         errorSend(response, 'fail_update_user', null);
+        return;
     }
 
     response.json({
@@ -75,6 +76,7 @@ router.put('/profile-image', async (request: express.Request, response: express.
         );
     } catch(e) {
         errorSend(response, 'fail_update_user', null);
+        return;
     }
 
     response.json({

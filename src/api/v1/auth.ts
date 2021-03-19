@@ -73,6 +73,7 @@ router.get('/login', async (request: express.Request, response: express.Response
         }
     } catch(e) {
         errorSend(response, 'internal_server_error', e);
+        return;
     }
 
     const data = {
@@ -102,6 +103,7 @@ router.get('/login', async (request: express.Request, response: express.Response
         });
     } catch(e) {
         errorSend(response, 'fail_create_token', null);
+        return;
     }
 
     response.json({
@@ -143,6 +145,7 @@ router.get('/access-token', async (request: express.Request, response: express.R
         });
     } catch(e) {
         errorSend(response, 'cannot_find_token', null);
+        return;
     }
 
     // no token found from database
