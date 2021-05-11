@@ -35,7 +35,7 @@ router.get('/video/:videoId', async (request: express.Request, response: express
 });
 
 
-const USER_VIDEO_LIMIT = 3;
+const USER_VIDEO_LIMIT = 8;
 
 
 // get videos of specific user

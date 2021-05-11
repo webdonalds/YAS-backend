@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as cors from 'cors';
 import { Database } from './model/index';
+import * as morgan from 'morgan';
 
 import index from './api/index';
 
@@ -12,6 +13,9 @@ Database.sync();
 
 // cors
 app.use(cors());
+
+// add access log logger
+app.use(morgan('combined'));
 
 // add router
 app.use(express.json({
