@@ -5,6 +5,27 @@ import { Sequelize } from 'sequelize';
 
 const router = express.Router();
 
+router.get('/myLike/:videoId', async (request: express.Request, response: express.Response) => {
+  const userId = request.body.userInfo.userId;
+  const videoId = Number(request.params.videoId);
+
+  try {
+    const like = await Like.findOne({
+      where: {
+        userId: userId,
+        videoId: videoId,
+      }
+    });
+
+    response.json({
+      'like': (like ? true : false)
+    });
+  }
+  catch (e) {
+    errorSend(response, 'videoId is invalid', null);
+    return;
+  }
+});
 
 // post like (set like)
 router.post('/', async (request: express.Request, response: express.Response) => {

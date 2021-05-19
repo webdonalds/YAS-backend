@@ -1,3 +1,36 @@
+## GET - /v1/like/myLike/{videoId}
+
+get my like status
+
+#### Header
+
+| KEY            | VALUE            | REQUIRED |
+| -------------- | ---------------- | -------- |
+| Content-type   | application/json | O        |
+| x-access-token | ACCESS_TOKEN     | O        |
+
+
+#### Body Parameters
+
+X
+
+#### URL Parameters
+
+X
+
+
+#### Success Response
+
+Code: 200 (success)
+
+Content:
+~~~
+{
+    "like": true | false
+}
+~~~
+
+
 ## POST - /v1/like/
 
 set like
