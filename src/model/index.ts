@@ -7,6 +7,7 @@ import Tag from './Tag';
 import Like from './Like';
 import Token from './Token';
 import VideoHasTag from './VideoHasTag';
+import Follow from './Follow';
 
 // import config
 import * as config from '../config/config.json';
@@ -22,12 +23,14 @@ const sequelize = new Sequelize(
         define: {
             charset: 'utf8',
             collate: 'utf8_general_ci',
-        }
-    }
+        },
+    },
 );
 
+
+
 // initialize models
-const models = [User, Video, Tag, Like, Token, VideoHasTag];
+const models = [User, Video, Tag, Like, Token, VideoHasTag, Follow];
 models.forEach(model => model.initialize(sequelize));
 
 
@@ -41,8 +44,10 @@ User.hasMany(Token, { foreignKey: 'userId' });
 
 
 // Follow Association
-User.belongsToMany(User, { as: 'Follower', through: 'follows', foreignKey: 'followerId' });
-User.belongsToMany(User, { as: 'Followee', through: 'follows', foreignKey: 'followeeId' });
+User.hasMany(Follow, {as: 'Followee', foreignKey: 'followeeId'});
+Follow.belongsTo(User, {as: 'Followee', foreignKey: 'followeeId'});
+User.hasMany(Follow, {as: 'Follower', foreignKey: 'followerId'});
+Follow.belongsTo(User, {as: 'Follower', foreignKey: 'followerId'});
 
 
 // Like Association
@@ -56,5 +61,5 @@ Video.hasMany(VideoHasTag, { as: 'video_has_tag', foreignKey: 'videoId'});
 
 export {
     sequelize as Database,
-    User, Video, Tag, Like, Token, VideoHasTag
+    User, Video, Tag, Like, Token, VideoHasTag, Follow
 };
