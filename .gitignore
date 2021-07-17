@@ -14,6 +14,10 @@ config.json
 dist
 
 
-#sql initialize files
+# sql initialize files
 *.sql
 *.secret
+
+
+# logs
+*.log

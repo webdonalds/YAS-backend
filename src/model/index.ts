@@ -13,7 +13,7 @@ import VideoHasTag from './VideoHasTag';
 // import config
 import * as config from '../config/config.json';
 
-const logStream = fs.createWriteStream('./sql.log', {'flags': 'a'});
+const logStream = fs.createWriteStream(config.database.databaseLogPath, {'flags': 'a'});
 
 const sequelize = new Sequelize(
     config.database.databaseName,
