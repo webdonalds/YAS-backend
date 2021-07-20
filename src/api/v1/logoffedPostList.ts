@@ -6,7 +6,7 @@ import { errorSend } from '../../error/errorUtil';
 const router = express.Router();
 
 
-const VIDEO_LIST_LIMIT = 3;
+const VIDEO_LIST_LIMIT = 8;
 const HOT_VIDEO_LIST_LIMIT = 20;
 
 

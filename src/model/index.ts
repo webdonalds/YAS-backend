@@ -1,5 +1,7 @@
 import { Sequelize } from 'sequelize';
 
+import * as fs from 'fs';
+
 // import models
 import User from './User';
 import Video from './Video';
@@ -12,6 +14,7 @@ import Follow from './Follow';
 // import config
 import * as config from '../config/config.json';
 
+const logStream = fs.createWriteStream(config.database.databaseLogPath, {'flags': 'a'});
 
 const sequelize = new Sequelize(
     config.database.databaseName,

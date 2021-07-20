@@ -5,7 +5,8 @@
         "databaseName": "DB_NAME",
         "databaseId": "DB_ID",
         "databasePassword": "DB_PW",
-        "databaseEndpoint": "DB_HOST"
+        "databaseEndpoint": "DB_HOST",
+        "databaseLogPath": "PATH_TO_SAVE_LOG"
     },
     "oauth2": {
         "apiKey": "API_KEY",
