@@ -1,5 +1,7 @@
 import { Sequelize } from 'sequelize';
 
+import * as fs from 'fs';
+
 // import models
 import User from './User';
 import Video from './Video';
@@ -11,6 +13,7 @@ import VideoHasTag from './VideoHasTag';
 // import config
 import * as config from '../config/config.json';
 
+const logStream = fs.createWriteStream(config.database.databaseLogPath, {'flags': 'a'});
 
 const sequelize = new Sequelize(
     config.database.databaseName,
@@ -22,6 +25,10 @@ const sequelize = new Sequelize(
         define: {
             charset: 'utf8',
             collate: 'utf8_general_ci',
+        },
+        logging: msg => {
+            const date = new Date();
+            logStream.write(`[${date.toISOString()}] - ${msg} \r\n`);
         }
     }
 );

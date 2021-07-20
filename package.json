@@ -15,9 +15,11 @@
     "googleapis": "^61.0.0",
     "jsonwebtoken": "^8.5.1",
     "mariadb": "^2.4.2",
+    "morgan": "^1.10.0",
     "sequelize": "^6.3.5"
   },
   "devDependencies": {
+    "@types/morgan": "^1.9.2",
     "@types/node": "^14.11.2",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
