@@ -191,6 +191,7 @@ router.get('/followersByFollowee/:followeeId', async (request: express.Request, 
     }
   } catch(e) {
     errorSend(response, 'fail_get_followers', null);
+    return;
   }
 
   const followers = [];
@@ -202,6 +203,41 @@ router.get('/followersByFollowee/:followeeId', async (request: express.Request, 
   response.json({
     followers: followers,
     pageToken: followers.length > 0 ? followers[followers.length - 1].id : null
+  });
+  return;
+});
+
+
+router.get('/isFollowing', async (request: express.Request, response: express.Response) => {
+  const followeeId = parseInt(request.query.followeeId as string);
+  const followerId = parseInt(request.query.followerId as string);
+
+  if(!followeeId){
+    errorSend(response, 'require_query_parameter_followeeId', null);
+    return ;
+  }
+
+  if(!followerId){
+    errorSend(response, 'require_query_parameter_followerId', null);
+    return;
+  }
+
+  let result;
+
+  try {
+    result = await Follow.findAll({
+      where: {
+        followeeId: followeeId,
+        followerId: followerId
+      }
+    });
+  } catch(e) {
+    errorSend(response, 'fail_get_is_following', e.message);
+    return;
+  }
+
+  response.json({
+    isFollowing: result.length > 0 ? true:false
   });
   return;
 });
