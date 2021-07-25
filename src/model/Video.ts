@@ -1,4 +1,5 @@
 import { Sequelize, Model, DataTypes } from 'sequelize';
+import { VideoResponse } from './dto/Video';
 import Tag from './Tag';
 import User from './User';
 
@@ -15,7 +16,7 @@ class Video extends Model {
 
     public createdAt: Date;
 
-    public static initialize(sequelize: Sequelize) {
+    public static initialize(sequelize: Sequelize): void {
         this.init(
             {
                 id: {

@@ -1,4 +1,5 @@
 import { Sequelize, Model, DataTypes, TextDataTypeOptions } from 'sequelize';
+import { UserInfoResponse } from './dto/User';
 
 class User extends Model {
     public id!: number;
@@ -11,7 +12,7 @@ class User extends Model {
     public registered: boolean;
 
 
-    public static initialize(sequelize: Sequelize) {
+    public static initialize(sequelize: Sequelize): void {
         this.init(
             {
                 id: {

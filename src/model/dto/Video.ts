@@ -1,8 +1,10 @@
-type TagResponse = {
+import { UserInfoResponse } from './User';
+
+export type TagResponse = {
   tagName: string,
 };
 
-type VideoResponse = {
+export type VideoResponse = {
   id: number,
   videoId: string,
   userId: number,
@@ -15,7 +17,7 @@ type VideoResponse = {
   User: UserInfoResponse,
 };
 
-type VideoListResponse = {
+export type VideoListResponse = {
   videoList: VideoResponse[],
   pageToken: number | null,
 };

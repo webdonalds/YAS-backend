@@ -2,7 +2,7 @@ import { Sequelize, Model } from 'sequelize';
 
 class VideoHasTag extends Model {
 
-    public static initialize(sequelize: Sequelize) {
+    public static initialize(sequelize: Sequelize): void {
         this.init(
             {
             },

@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { errorSend } from '../../error/errorUtil';
+import { UserInfoResponse } from '../../model/dto/User';
 import { User } from '../../model/index';
 import userInfoValidation from '../../validation/userInfoValidation';
 

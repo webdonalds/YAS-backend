@@ -6,6 +6,7 @@ import { Op } from 'sequelize';
 
 import middleware from '../middleware';
 import { errorSend } from '../../error/errorUtil';
+import { VideoListResponse } from '../../model/dto/Video';
 
 const router = express.Router();
 

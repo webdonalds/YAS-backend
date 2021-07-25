@@ -1,4 +1,4 @@
-type UserInfoResponse = {
+export type UserInfoResponse = {
   id: number,
   email: string,
   nickname: string,

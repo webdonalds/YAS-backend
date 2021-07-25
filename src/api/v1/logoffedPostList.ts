@@ -2,6 +2,7 @@ import * as express from 'express';
 import { Video, Tag, User } from '../../model/index';
 import { Op } from 'sequelize';
 import { errorSend } from '../../error/errorUtil';
+import { VideoListResponse } from '../../model/dto/Video';
 
 const router = express.Router();
 
