@@ -19,6 +19,12 @@ class Tag extends Model {
             }
         );
     }
+
+    public toTagResponse(): TagResponse {
+        return {
+            tagName: this.tagName
+        };
+    }
 }
 
 

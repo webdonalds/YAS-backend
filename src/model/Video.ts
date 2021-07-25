@@ -1,4 +1,6 @@
 import { Sequelize, Model, DataTypes } from 'sequelize';
+import Tag from './Tag';
+import User from './User';
 
 class Video extends Model {
     public id!: number;
@@ -6,7 +8,12 @@ class Video extends Model {
     public userId!: number;
     public title!: string;
     public description: string;
+    public totalLikes: number;
 
+    public User: User;
+    public Tags: Tag[];
+
+    public createdAt: Date;
 
     public static initialize(sequelize: Sequelize) {
         this.init(
@@ -44,6 +51,22 @@ class Video extends Model {
                 sequelize
             }
         );
+    }
+
+    public toVideoResponse(): VideoResponse {
+        return {
+            id: this.id,
+            videoId: this.videoId,
+            userId: this.userId,
+            title: this.title,
+            description: this.description,
+            totalLikes: this.totalLikes,
+            createdAt: this.createdAt,
+            Tags: this.Tags.map((tag) => {
+                return tag.toTagResponse();
+            }),
+            User: this.User.toUserInfoResponse(),
+        };
     }
 }
 
