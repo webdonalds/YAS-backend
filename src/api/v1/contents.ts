@@ -3,6 +3,8 @@ import googleService from '../../service/googleService';
 
 const router = express.Router();
 
+// these apis return youtube api's response as it is
+
 router.get('/playlists', async (req: express.Request, res: express.Response) => {
   const accessToken: string = req.body.userInfo.accessToken;
   const pageToken: string = req.query.pageToken as string;
