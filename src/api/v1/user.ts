@@ -7,7 +7,8 @@ const router = express.Router();
 
 
 router.put('/user-info', async (request: express.Request, response: express.Response) => {
-    const userId = request.body.userInfo ? request.body.userInfo.userId : null;
+    const userInfo = request.body.userInfo;
+    const userId = userInfo ? userInfo.userId : null;
     const nickname = request.body.nickname;
     const aboutMe = request.body.aboutMe;
 
@@ -41,10 +42,14 @@ router.put('/user-info', async (request: express.Request, response: express.Resp
         return;
     }
 
-    response.json({
+    const userInfoResponse: UserInfoResponse = {
+        id: userInfo.userId,
+        email: userInfo.email,
         nickname: nickname,
+        imagePath: userInfo.imagePath,
         aboutMe: aboutMe
-    });
+    };
+    response.json(userInfoResponse);
     return;
 });
 
@@ -99,14 +104,14 @@ router.get('/user-info', async (request: express.Request, response: express.Resp
         return;
     }
 
-    const userInfoResponse: UserInfo = {
+    const userInfoResponse: UserInfoResponse = {
         id: userInfo.id,
         email: userInfo.email,
         nickname: userInfo.nickname,
         imagePath: userInfo.imagePath,
         aboutMe: userInfo.aboutMe
     };
-    response.json();
+    response.json(userInfoResponse);
     return;
 });
 
