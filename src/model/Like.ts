@@ -26,5 +26,4 @@ class Like extends Model {
     }
 }
 
-
 export default Like;

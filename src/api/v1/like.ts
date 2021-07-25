@@ -2,6 +2,7 @@ import * as express from 'express';
 import { Like, Video } from '../../model/index';
 import { errorSend } from '../../error/errorUtil';
 import { Sequelize } from 'sequelize';
+import { LikeResponse } from '../../model/dto/Like';
 
 const router = express.Router();
 
@@ -17,9 +18,10 @@ router.get('/myLike/:videoId', async (request: express.Request, response: expres
       }
     });
 
-    response.json({
-      'like': (like ? true : false)
-    });
+    const likeResponse: LikeResponse = {
+      like: (like ? true : false)
+    };
+    response.json(likeResponse);
   }
   catch (e) {
     errorSend(response, 'videoId is invalid', null);
