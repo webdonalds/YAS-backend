@@ -54,6 +54,16 @@ class User extends Model {
             }
         );
     }
+
+    public toUserInfoResponse(): UserInfoResponse {
+        return {
+            id: this.id,
+            email: this.email,
+            nickname: this.nickname,
+            imagePath: this.imagePath,
+            aboutMe: this.aboutMe
+        };
+    }
 }
 
 

@@ -97,21 +97,14 @@ router.get('/user-info', async (request: express.Request, response: express.Resp
         return;
     }
 
-    const userInfo = await User.findByPk(userId);
+    const user = await User.findByPk(userId);
 
-    if(!userInfo){
+    if(!user){
         errorSend(response, 'no_user_found', 'No corresponding user for given token');
         return;
     }
 
-    const userInfoResponse: UserInfoResponse = {
-        id: userInfo.id,
-        email: userInfo.email,
-        nickname: userInfo.nickname,
-        imagePath: userInfo.imagePath,
-        aboutMe: userInfo.aboutMe
-    };
-    response.json(userInfoResponse);
+    response.json(user.toUserInfoResponse());
     return;
 });
 
