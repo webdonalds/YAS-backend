@@ -79,9 +79,7 @@ router.put('/profile-image', async (request: express.Request, response: express.
         return;
     }
 
-    response.json({
-        message: 'success'
-    });
+    response.json();
     return;
 });
 
@@ -101,13 +99,14 @@ router.get('/user-info', async (request: express.Request, response: express.Resp
         return;
     }
 
-    response.json({
+    const userInfoResponse: UserInfo = {
         id: userInfo.id,
         email: userInfo.email,
         nickname: userInfo.nickname,
         imagePath: userInfo.imagePath,
         aboutMe: userInfo.aboutMe
-    });
+    };
+    response.json();
     return;
 });
 

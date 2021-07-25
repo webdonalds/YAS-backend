@@ -237,7 +237,7 @@ router.delete('/video', middleware.validateToken, async (request: express.Reques
     }
     
     response.json({
-        message: 'success',
+        postId: videoPostId,
     });
     return;
 });

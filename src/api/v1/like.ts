@@ -51,9 +51,7 @@ router.post('/', async (request: express.Request, response: express.Response) =>
         id: videoId
       }
     });
-    response.json({
-      message: 'success'
-    });
+    response.json();
   } catch (e) {
     await Like.destroy({
       where: {
@@ -95,9 +93,7 @@ router.delete('/', async (request: express.Request, response: express.Response) 
         id: videoId
       }
     });
-    response.json({
-      message: 'success'
-    });
+    response.json();
   } catch (e) {
     await Like.create({
       userId: userId,
