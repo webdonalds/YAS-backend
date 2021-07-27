@@ -27,6 +27,10 @@ const sequelize = new Sequelize(
             charset: 'utf8',
             collate: 'utf8_general_ci',
         },
+        logging: msg => {
+            const date = new Date();
+            logStream.write(`[${date.toISOString()}] - ${msg} \r\n`);
+        }
     },
 );
 
