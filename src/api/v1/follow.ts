@@ -102,7 +102,7 @@ router.get('/followeesByFollower/:followerId', async (request: express.Request, 
     {
       model: User,
       as: 'Followee',
-      attributes: ['id', 'userId', 'nickname', 'imagePath']
+      attributes: ['id', 'nickname', 'imagePath', 'aboutMe']
     }
   ];
 
@@ -143,7 +143,7 @@ router.get('/followeesByFollower/:followerId', async (request: express.Request, 
   }
 
   response.json({
-    followees: followees,
+    follows: followees,
     pageToken: followees.length > 0 ? followees[followees.length - 1].id : null
   });
   return;
@@ -160,7 +160,7 @@ router.get('/followersByFollowee/:followeeId', async (request: express.Request, 
     {
       model: User,
       as: 'Follower',
-      attributes: ['id', 'userId', 'nickname', 'imagePath']
+      attributes: ['id', 'nickname', 'imagePath', 'aboutMe']
     }
   ];
 
@@ -201,7 +201,7 @@ router.get('/followersByFollowee/:followeeId', async (request: express.Request, 
   }
 
   response.json({
-    followers: followers,
+    follows: followers,
     pageToken: followers.length > 0 ? followers[followers.length - 1].id : null
   });
   return;
