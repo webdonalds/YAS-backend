@@ -49,7 +49,7 @@ Unfollow user
 
 | KEY         | VALUE            | REQUIRED |
 | ----------- | ---------------- | -------- |
-| videoId     | VIDEO_ID         | O        |
+|             |                  |          |
 
 
 #### URL Parameters
@@ -70,45 +70,9 @@ Content:
 
 
 
-## GET - /v1/follow/followeesByFollower/{followerId}
+## GET - /v1/follow
 
-Get list of followees by followerId
-
-
-#### Header
-
-| KEY            | VALUE            | REQUIRED |
-| -------------- | ---------------- | -------- |
-| Content-type   | application/json | O        |
-
-#### Body Parameters
-
-X
-
-
-#### URL Parameters
-
-| KEY       | VALUE      | REQUIRED |
-| --------- | ---------- | -------- |
-| pageToken | PAGE_TOKEN | X        |
-
-
-#### Success Response
-
-Code: 200 (success)
-Content:
-~~~
-{
-  "followees": [LIST_OF_FOLLOWEES],
-  "pageToken": PAGE_TOKEN | null
-}
-~~~
-
-
-
-## GET - /v1/follow/followersByFollowee/{followeeId}
-
-Get list of followers by followeeId
+Get list of follows by followerId or followeeId
 
 
 #### Header
@@ -124,19 +88,20 @@ X
 
 #### URL Parameters
 
-| KEY       | VALUE      | REQUIRED |
-| --------- | ---------- | -------- |
-| pageToken | PAGE_TOKEN | X        |
+| KEY        | VALUE       | REQUIRED |
+| ---------- | ----------- | -------- |
+| pageToken  | PAGE_TOKEN  | X        |
+| followerId | FOLLOWER_ID | O/X      |
+| followeeId | FOLLOWEE_ID | X/O      |
 
 
 #### Success Response
 
 Code: 200 (success)
 Content:
-
 ~~~
 {
-  "followers": [LIST_OF_FOLLOWERS],
+  "follows": [LIST_OF_FOLLOWS],
   "pageToken": PAGE_TOKEN | null
 }
 ~~~
@@ -145,7 +110,7 @@ Content:
 
 ## GET - /v1/follow/isFollowing
 
-Check 
+Check whether follow exists
 
 
 #### Header
