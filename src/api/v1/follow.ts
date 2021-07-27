@@ -91,122 +91,67 @@ router.delete('/:followeeId', middleware.validateToken, async (request: express.
   return;
 });
 
-
-router.get('/followeesByFollower/:followerId', async (request: express.Request, response: express.Response) => {
-  const followerId = request.params.followerId;
+router.get('/', async (request: express.Request, response: express.Response) => {
+  const followerId = request.query.followerId;
+  const followeeId = request.query.followeeId;
   const lastFollowId = parseInt(request.query.pageToken as string);
 
-  let result;
-
-  const includeOptions = [
-    {
-      model: User,
-      as: 'Followee',
-      attributes: ['id', 'nickname', 'imagePath', 'aboutMe']
-    }
-  ];
-
-  try {
-    if(isNaN(lastFollowId)){
-      result = await Follow.findAll({
-        where: {
-          followerId: followerId
-        },
-        order: [
-            ['id', 'DESC']
-        ],
-        limit: FOLLOW_LIMIT,
-        include: includeOptions
-      });
-    } else {
-      result = await Follow.findAll({
-        where:{
-            id: { [Op.lt]: lastFollowId },
-            followerId: followerId
-        },
-        order: [
-            ['id', 'DESC']
-        ],
-        limit: FOLLOW_LIMIT,
-        include: includeOptions
-    });
-    }
-  } catch(e) {
-    errorSend(response, 'fail_get_followees', null);
+  if((followerId && followeeId) || (!followerId && !followeeId)){
+    errorSend(response, 'require_1_between_followerId_or_followeeId', 'Require 1 query param between followerId or followeeId)');
     return;
   }
 
-  const followees = [];
+  let whereOption;
+  let target;
 
-  for(let i=0;i<result.length;i++){
-    followees.push(result[i].dataValues['Followee']);
+  if(followerId) {
+    whereOption = { followerId: followerId };
+    target = 'Followee';
+  } else if (followeeId){
+    whereOption = { followeeId: followeeId };
+    target = 'Follower';
   }
 
-  response.json({
-    follows: followees,
-    pageToken: followees.length > 0 ? followees[followees.length - 1].id : null
-  });
-  return;
-});
-
-
-router.get('/followersByFollowee/:followeeId', async (request: express.Request, response: express.Response) => {
-  const followeeId = request.params.followeeId;
-  const lastFollowId = parseInt(request.query.pageToken as string);
+  if(lastFollowId) {
+    whereOption = {
+      ...whereOption,
+      ...{ id: { [Op.lt]: lastFollowId } }
+    };
+  }
 
   let result;
 
-  const includeOptions = [
-    {
-      model: User,
-      as: 'Follower',
-      attributes: ['id', 'nickname', 'imagePath', 'aboutMe']
-    }
-  ];
-
   try {
-    if(isNaN(lastFollowId)){
-      result = await Follow.findAll({
-        where: {
-          followeeId: followeeId
-        },
-        order: [
-            ['id', 'DESC']
-        ],
-        limit: FOLLOW_LIMIT,
-        include: includeOptions
-      });
-    } else {
-      result = await Follow.findAll({
-        where:{
-            id: { [Op.lt]: lastFollowId },
-            followeeId: followeeId
-        },
-        order: [
-            ['id', 'DESC']
-        ],
-        limit: FOLLOW_LIMIT,
-        include: includeOptions
+    result = await Follow.findAll({
+      where: whereOption,
+      order: [
+          ['id', 'DESC']
+      ],
+      limit: FOLLOW_LIMIT,
+      include: [
+        {
+          model: User,
+          as: target,
+          attributes: ['id', 'nickname', 'imagePath', 'aboutMe']
+        }
+      ]
     });
-    }
   } catch(e) {
-    errorSend(response, 'fail_get_followers', null);
+    errorSend(response, 'fail_get_follows', null);
     return;
   }
 
-  const followers = [];
+  const follows = [];
 
-  for(let i=0;i<result.length;i++){
-    followers.push(result[i].dataValues['Follower']);
-  }
+  result.forEach(data => follows.push(data.dataValues[target]));
 
   response.json({
-    follows: followers,
-    pageToken: followers.length > 0 ? followers[followers.length - 1].id : null
+    follows: follows,
+    pageToken: follows.length > 0 ? follows[follows.length - 1].id : null
   });
+
   return;
 });
-
 
 router.get('/isFollowing', async (request: express.Request, response: express.Response) => {
   const followeeId = parseInt(request.query.followeeId as string);
