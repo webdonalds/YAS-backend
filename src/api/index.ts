@@ -6,6 +6,7 @@ import contents from './v1/contents';
 import like from './v1/like';
 import post from './v1/post';
 import logoffedPostList from './v1/logoffedPostList';
+import follow from './v1/follow';
 
 import middleware from './middleware';
 
@@ -18,5 +19,6 @@ router.use('/v1/like', middleware.validateToken, like);
 // handle middleware in post
 router.use('/v1/post', post);
 router.use('/v1/logoffed-post-list', logoffedPostList);
+router.use('/v1/follow', follow);
 
 export default router;

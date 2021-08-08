@@ -9,6 +9,7 @@ import Tag from './Tag';
 import Like from './Like';
 import Token from './Token';
 import VideoHasTag from './VideoHasTag';
+import Follow from './Follow';
 
 // import config
 import * as config from '../config/config.json';
@@ -30,27 +31,25 @@ const sequelize = new Sequelize(
             const date = new Date();
             logStream.write(`[${date.toISOString()}] - ${msg} \r\n`);
         }
-    }
+    },
 );
 
 // initialize models
-const models = [User, Video, Tag, Like, Token, VideoHasTag];
+const models = [User, Video, Tag, Like, Token, VideoHasTag, Follow];
 models.forEach(model => model.initialize(sequelize));
-
 
 // User - Video Association
 User.hasMany(Video, { foreignKey: 'userId' });
 Video.belongsTo(User, { foreignKey: 'userId' });
 
-
 // User - Token Association
 User.hasMany(Token, { foreignKey: 'userId' });
 
-
 // Follow Association
-User.belongsToMany(User, { as: 'Follower', through: 'follows', foreignKey: 'followerId' });
-User.belongsToMany(User, { as: 'Followee', through: 'follows', foreignKey: 'followeeId' });
-
+User.hasMany(Follow, {as: 'Followee', foreignKey: 'followeeId'});
+Follow.belongsTo(User, {as: 'Followee', foreignKey: 'followeeId'});
+User.hasMany(Follow, {as: 'Follower', foreignKey: 'followerId'});
+Follow.belongsTo(User, {as: 'Follower', foreignKey: 'followerId'});
 
 // Like Association
 User.hasMany(Like, { foreignKey: 'userId' });
@@ -63,5 +62,5 @@ Video.hasMany(VideoHasTag, { as: 'video_has_tag', foreignKey: 'videoId'});
 
 export {
     sequelize as Database,
-    User, Video, Tag, Like, Token, VideoHasTag
+    User, Video, Tag, Like, Token, VideoHasTag, Follow
 };
