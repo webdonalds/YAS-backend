@@ -21,7 +21,7 @@ router.post('/:followeeId', middleware.validateToken, async (request: express.Re
   
   if(!parameters.followerId){
     errorSend(response, 'require_body_parameter_followerId', 'Require login');
-    return ;
+    return;
   }
 
   if(!parameters.followeeId){
@@ -31,7 +31,7 @@ router.post('/:followeeId', middleware.validateToken, async (request: express.Re
 
   if(parameters.followeeId == parameters.followerId){
     errorSend(response, 'follower_and_followee_same', 'Cannot self follow');
-    return ;
+    return;
   }
 
   try {
@@ -64,7 +64,7 @@ router.delete('/:followeeId', middleware.validateToken, async (request: express.
 
   if(!parameters.followerId){
     errorSend(response, 'require_body_parameter_followerId', 'Require login');
-    return ;
+    return;
   }
 
   if(!parameters.followeeId){
@@ -104,19 +104,16 @@ router.get('/', async (request: express.Request, response: express.Response) => 
   let whereOption;
   let target;
 
-  if(followerId) {
+  if(followerId != null && followerId != undefined) {
     whereOption = { followerId: followerId };
     target = 'Followee';
-  } else if (followeeId){
+  } else if (followeeId != null && followeeId != undefined){
     whereOption = { followeeId: followeeId };
     target = 'Follower';
   }
 
   if(lastFollowId) {
-    whereOption = {
-      ...whereOption,
-      ...{ id: { [Op.lt]: lastFollowId } }
-    };
+    whereOption['id'] = { [Op.lt]: lastFollowId } ;
   }
 
   let result;
@@ -141,9 +138,7 @@ router.get('/', async (request: express.Request, response: express.Response) => 
     return;
   }
 
-  const follows = [];
-
-  result.forEach(data => follows.push(data.dataValues[target]));
+  const follows = result.map(data => data.dataValues[target]);
 
   response.json({
     follows: follows,
@@ -159,7 +154,7 @@ router.get('/isFollowing', async (request: express.Request, response: express.Re
 
   if(!followeeId){
     errorSend(response, 'require_query_parameter_followeeId', null);
-    return ;
+    return;
   }
 
   if(!followerId){

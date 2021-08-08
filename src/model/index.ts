@@ -34,28 +34,22 @@ const sequelize = new Sequelize(
     },
 );
 
-
-
 // initialize models
 const models = [User, Video, Tag, Like, Token, VideoHasTag, Follow];
 models.forEach(model => model.initialize(sequelize));
-
 
 // User - Video Association
 User.hasMany(Video, { foreignKey: 'userId' });
 Video.belongsTo(User, { foreignKey: 'userId' });
 
-
 // User - Token Association
 User.hasMany(Token, { foreignKey: 'userId' });
-
 
 // Follow Association
 User.hasMany(Follow, {as: 'Followee', foreignKey: 'followeeId'});
 Follow.belongsTo(User, {as: 'Followee', foreignKey: 'followeeId'});
 User.hasMany(Follow, {as: 'Follower', foreignKey: 'followerId'});
 Follow.belongsTo(User, {as: 'Follower', foreignKey: 'followerId'});
-
 
 // Like Association
 User.hasMany(Like, { foreignKey: 'userId' });
