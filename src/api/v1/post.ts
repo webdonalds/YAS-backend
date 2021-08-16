@@ -98,7 +98,7 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
 
     response.json({
         videoList: userVideos,
-        pageToken: userVideos.length > 0 ? userVideos[userVideos.length - 1].id : null
+        pageToken: userVideos.length > 0 ? userVideos[userVideos.length - 1].id : parseInt(request.query.pageToken as string)
     });
     return;
 });

@@ -59,7 +59,7 @@ router.get('/recent-videos', async (request: express.Request, response: express.
 
     response.json({
         videoList: recentVideoList,
-        pageToken: recentVideoList.length > 0 ? recentVideoList[recentVideoList.length - 1].id : null
+        pageToken: recentVideoList.length > 0 ? recentVideoList[recentVideoList.length - 1].id : parseInt(request.query.pageToken as string)
     });
     return;
 });
