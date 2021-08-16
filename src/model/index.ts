@@ -9,6 +9,7 @@ import Tag from './Tag';
 import Like from './Like';
 import Token from './Token';
 import VideoHasTag from './VideoHasTag';
+import Follow from './Follow';
 
 // import config
 import * as config from '../config/config.json';
@@ -66,5 +67,5 @@ Video.hasMany(VideoHasTag, { as: 'video_has_tag', foreignKey: 'videoId'});
 
 export {
     sequelize as Database,
-    User, Video, Tag, Like, Token, VideoHasTag
+    User, Video, Tag, Like, Token, VideoHasTag, Follow
 };

@@ -2,6 +2,47 @@
 
 Get video post
 
+#### Body Parameters
+
+X
+
+#### URL Parameters
+
+X
+
+#### Success Response
+
+Code: 200 (success)
+
+Content:
+
+~~~
+{
+    "id": 0,
+    "videoId": VIDEO_ID,
+    "userId": USER_ID,
+    "title": TITLE,
+    "description": DESCRIPTION,
+    "totalLikes": 0,
+    "createdAt": "2021-01-18T15:28:38.000Z",
+    "Tags": [{
+      "tagName": TAG_NAME
+    }],
+    User: {
+      "id": ID,
+      "email": EMAIL,
+      "nickname": NICKNAME,
+      "imagePath": IMAGE_PATH,
+      "aboutMe": ABOUT_ME
+    }
+}
+~~~
+
+
+## GET - /v1/post/user-videos/{id}
+
+Get videos of specific user
+
 #### Header
 
 | KEY            | VALUE            | REQUIRED |
@@ -13,12 +54,9 @@ Get video post
 
 X
 
-
 #### URL Parameters
 
 X
-
-
 
 #### Success Response
 
@@ -28,17 +66,28 @@ Content:
 
 ~~~
 {
+  "videoList": [{
     "id": 0,
-    "videoId": "VIDEO_ID",
-    "userId": null,
-    "title": "TITLE",
-    "description": "DESCRIPTION",
+    "videoId": VIDEO_ID,
+    "userId": USER_ID,
+    "title": TITLE,
+    "description": DESCRIPTION,
     "totalLikes": 0,
     "createdAt": "2021-01-18T15:28:38.000Z",
-    "updatedAt": "2021-01-18T15:28:38.000Z"
+    "Tags": [{
+      "tagName": TAG_NAME
+    }],
+    User: {
+      "id": ID,
+      "email": EMAIL,
+      "nickname": NICKNAME,
+      "imagePath": IMAGE_PATH,
+      "aboutMe": ABOUT_ME
+    }
+  }],
+  "pageToken": PAGE_TOKEN
 }
 ~~~
-
 
 
 ## POST - /v1/post/video
@@ -129,7 +178,7 @@ Content:
 
 ~~~
 {
-  "message": "success"
+  "postId": POST_ID
 }
 ~~~
 
@@ -174,7 +223,98 @@ Content:
 
 ~~~
 {
-  "message": "success"
+  "postId": POST_ID
 }
 ~~~
 
+## GET - /v1/logoffed-post-list/recent-videos
+
+Get recent videos
+
+#### URL Parameters
+
+| KEY       | VALUE  | REQUIRED |
+| --------- | -----  | -------- |
+| pageToken | STRING | X        |
+
+#### Body Parameters
+
+X
+
+#### URL Parameters
+
+X
+
+#### Success Response
+
+Code: 200 (success)
+
+Content:
+
+~~~
+{
+  "videoList": [{
+    "id": 0,
+    "videoId": VIDEO_ID,
+    "userId": USER_ID,
+    "title": TITLE,
+    "description": DESCRIPTION,
+    "totalLikes": 0,
+    "createdAt": "2021-01-18T15:28:38.000Z",
+    "Tags": [{
+      "tagName": TAG_NAME
+    }],
+    User: {
+      "id": ID,
+      "email": EMAIL,
+      "nickname": NICKNAME,
+      "imagePath": IMAGE_PATH,
+      "aboutMe": ABOUT_ME
+    }
+  }],
+  "pageToken": PAGE_TOKEN
+}
+~~~
+
+
+## GET - /v1/logoffed-post-list/hot-videos
+
+Get hot videos
+
+#### Body Parameters
+
+X
+
+#### URL Parameters
+
+X
+
+#### Success Response
+
+Code: 200 (success)
+
+Content:
+
+~~~
+{
+  "videoList": [{
+    "id": 0,
+    "videoId": VIDEO_ID,
+    "userId": USER_ID,
+    "title": TITLE,
+    "description": DESCRIPTION,
+    "totalLikes": 0,
+    "createdAt": "2021-01-18T15:28:38.000Z",
+    "Tags": [{
+      "tagName": TAG_NAME
+    }],
+    User: {
+      "id": ID,
+      "email": EMAIL,
+      "nickname": NICKNAME,
+      "imagePath": IMAGE_PATH,
+      "aboutMe": ABOUT_ME
+    }
+  }]
+}
+~~~
