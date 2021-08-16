@@ -62,7 +62,6 @@ Code: 200 (success)
 Content:
 ~~~
 {
-    "message": "success"
 }
 ~~~
 
@@ -96,9 +95,9 @@ X
 #### Success Response
 
 Code: 200 (success)
+
 Content:
 ~~~
 {
-  "message": "success"
 }
 ~~~

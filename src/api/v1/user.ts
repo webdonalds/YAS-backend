@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { errorSend } from '../../error/errorUtil';
+import { UserInfoResponse } from '../../model/dto/User';
 import { User } from '../../model/index';
 import userInfoValidation from '../../validation/userInfoValidation';
 
@@ -7,7 +8,8 @@ const router = express.Router();
 
 
 router.put('/user-info', async (request: express.Request, response: express.Response) => {
-    const userId = request.body.userInfo ? request.body.userInfo.userId : null;
+    const userInfo = request.body.userInfo;
+    const userId = userInfo ? userInfo.userId : null;
     const nickname = request.body.nickname;
     const aboutMe = request.body.aboutMe;
 
@@ -41,10 +43,14 @@ router.put('/user-info', async (request: express.Request, response: express.Resp
         return;
     }
 
-    response.json({
+    const userInfoResponse: UserInfoResponse = {
+        id: userInfo.userId,
+        email: userInfo.email,
         nickname: nickname,
+        imagePath: userInfo.imagePath,
         aboutMe: aboutMe
-    });
+    };
+    response.json(userInfoResponse);
     return;
 });
 
@@ -79,9 +85,7 @@ router.put('/profile-image', async (request: express.Request, response: express.
         return;
     }
 
-    response.json({
-        message: 'success'
-    });
+    response.json();
     return;
 });
 
@@ -94,20 +98,14 @@ router.get('/user-info', async (request: express.Request, response: express.Resp
         return;
     }
 
-    const userInfo = await User.findByPk(userId);
+    const user = await User.findByPk(userId);
 
-    if(!userInfo){
+    if(!user){
         errorSend(response, 'no_user_found', 'No corresponding user for given token');
         return;
     }
 
-    response.json({
-        id: userInfo.id,
-        email: userInfo.email,
-        nickname: userInfo.nickname,
-        imagePath: userInfo.imagePath,
-        aboutMe: userInfo.aboutMe
-    });
+    response.json(user.toUserInfoResponse());
     return;
 });
 

@@ -4,7 +4,7 @@ class Like extends Model {
     public userId!: number;
     public videoId!: number;
 
-    public static initialize(sequelize: Sequelize) {
+    public static initialize(sequelize: Sequelize): void {
         this.init(
             {
                 userId: {
@@ -25,6 +25,5 @@ class Like extends Model {
         );
     }
 }
-
 
 export default Like;
