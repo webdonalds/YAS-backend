@@ -90,9 +90,39 @@ router.put('/profile-image', async (request: express.Request, response: express.
 });
 
 
-router.get('/user-info', async (request: express.Request, response: express.Response) => {
+router.get('/login-user-info', async (request: express.Request, response: express.Response) => {
     const userId = request.body.userInfo ? request.body.userInfo.userId : null;
+    
+    if(!userId){
+        errorSend(response, 'require_body_parameter_userId', null);
+        return;
+    }
 
+    const userInfo = await User.findByPk(userId);
+
+    if(!userInfo){
+        errorSend(response, 'no_user_found', 'No corresponding user for given token');
+        return;
+    }
+
+    response.json({
+        id: userInfo.id,
+        email: userInfo.email,
+        nickname: userInfo.nickname,
+        imagePath: userInfo.imagePath,
+        aboutMe: userInfo.aboutMe
+    });
+    return;
+});
+
+
+router.get('/user-info/:userId', async (request: express.Request, response: express.Response) => {
+    let userId = request.params.userId;
+
+    if(userId == null){
+        userId = request.body.userInfo ? request.body.userInfo.userId : null;
+    }
+    
     if(!userId){
         errorSend(response, 'require_body_parameter_userId', null);
         return;

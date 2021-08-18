@@ -139,10 +139,10 @@ router.get('/', async (request: express.Request, response: express.Response) => 
   }
 
   const follows = result.map(data => data.dataValues[target]);
-
+  
   response.json({
     follows: follows,
-    pageToken: follows.length > 0 ? follows[follows.length - 1].id : null
+    pageToken: follows.length > 0 ? result[result.length-1].dataValues.id : parseInt(request.query.pageToken as string)
   });
 
   return;

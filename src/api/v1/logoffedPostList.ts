@@ -40,11 +40,14 @@ router.get('/recent-videos', async (request: express.Request, response: express.
         return;
     }
 
+
     const videoListResponse: VideoListResponse = {
         videoList: videos.map((video) => video.toVideoResponse()),
-        pageToken: videos.length > 0 ? videos[videos.length - 1].id : null
+        pageToken: videos.length > 0 ? videos[videos.length - 1].id : parseInt(request.query.pageToken as string)
     };
+
     response.json(videoListResponse);
+
     return;
 });
 
