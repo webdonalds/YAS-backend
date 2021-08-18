@@ -4,6 +4,7 @@ import tokenService from '../../service/tokenService';
 
 import { User, Token } from '../../model/index';
 import { errorSend } from '../../error/errorUtil';
+import { AccessTokenResponse, TokenResponse } from '../../model/dto/Auth';
 
 const router = express.Router();
 
@@ -35,13 +36,13 @@ router.get('/login', async (request: express.Request, response: express.Response
 
     const userInfo = await googleService.getUserInfo(googleTokens.access_token);
 
-    let result = await User.findOne({
+    let user = await User.findOne({
         where: { email: userInfo.email }
     });
 
     // TODO: error handling => rollback? transaction?
     try {
-        if (result == null) {
+        if (user == null) {
             if (!('refresh_token' in googleTokens)) {
                 errorSend(response, 'user_not_found', null);
                 return;
@@ -52,7 +53,7 @@ router.get('/login', async (request: express.Request, response: express.Response
                 nickname: userInfo.email.split('@')[0],
                 googleRefreshToken: googleTokens.refresh_token,
             });
-            result = await User.findOne({
+            user = await User.findOne({
                 where: { email: userInfo.email }
             });
         }
@@ -76,30 +77,22 @@ router.get('/login', async (request: express.Request, response: express.Response
         return;
     }
 
-    const data = {
-        id: result.id,
-        email: result.email,
-        nickname: result.nickname,
-        imagePath: result.imagePath,
-        aboutMe: result.aboutMe,
-    };
-
     const yasToken = tokenService.makeYasToken();
     const yasSecretKey = tokenService.makeYasSecretKey();
 
     const yasAccessToken = tokenService.makeYasAccessToken(yasToken, yasSecretKey);
     const yasRefreshToken = tokenService.makeYasRefreshToken(yasToken, yasSecretKey);
 
-    const auth = {
+    const auth: TokenResponse = {
         yasAccessToken: yasAccessToken,
         yasRefreshToken: yasRefreshToken
     };
 
     try {
         await Token.create({
-            userId: result.id,
+            userId: user.id,
             yasToken: yasToken,
-            yasSecretKey: yasSecretKey
+            yasSecretKey: yasSecretKey,
         });
     } catch(e) {
         errorSend(response, 'fail_create_token', null);
@@ -107,14 +100,11 @@ router.get('/login', async (request: express.Request, response: express.Response
     }
 
     response.json({
-        data: data,
+        data: user.toUserInfoResponse(),
         auth: auth,
     });
     return;
 });
-
-
-
 
 router.get('/access-token', async (request: express.Request, response: express.Response) => {
     const encryptedRefreshToken: string = request.query.token as string;
@@ -157,9 +147,10 @@ router.get('/access-token', async (request: express.Request, response: express.R
     const validity = tokenService.verifyToken(encryptedRefreshToken, tokenInfo.yasSecretKey);
 
     if (validity == tokenService.TOKEN_VALID) {
-        response.json({
-            yasAccessToken: tokenService.makeYasAccessToken(yasToken, tokenInfo.yasSecretKey)
-        });
+        const accessTokenResponse: AccessTokenResponse = {
+            yasAccessToken: tokenService.makeYasAccessToken(yasToken, tokenInfo.yasSecretKey),
+        };
+        response.json(accessTokenResponse);
     } else if (validity == tokenService.TOKEN_INVALID) {
         errorSend(response, 'invalid_refresh_token', 'not valid jwt refresh token');
     } else if (validity == tokenService.TOKEN_EXPIRED) {
@@ -172,4 +163,3 @@ router.get('/access-token', async (request: express.Request, response: express.R
 });
 
 export default router;
-

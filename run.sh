@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec npm run test
+exec npm run start

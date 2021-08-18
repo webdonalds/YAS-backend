@@ -1,10 +1,11 @@
 import { Sequelize, Model, DataTypes } from 'sequelize';
+import { TagResponse } from './dto/Video';
 
 class Tag extends Model {
     public tagId!: number;
     public tagName!: string;
 
-    public static initialize(sequelize: Sequelize) {
+    public static initialize(sequelize: Sequelize):void {
         this.init(
             {
                 tagName: {
@@ -18,6 +19,12 @@ class Tag extends Model {
                 sequelize
             }
         );
+    }
+
+    public toTagResponse(): TagResponse {
+        return {
+            tagName: this.tagName
+        };
     }
 }
 

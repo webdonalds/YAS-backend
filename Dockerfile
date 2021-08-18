@@ -13,4 +13,3 @@ RUN chmod +x run.sh
 EXPOSE 3000
 
 CMD [ "/yas-backend/run.sh" ]
-

@@ -43,7 +43,7 @@ Content:
   },
   "auth": {
     "yasAccessToken": YAS_ACCESS_TOKEN,
-    "yasSecretKey": YAS_SECRET_KEY
+    "yasRefreshToken": YAS_REFRESH_TOKEN
   }
 }
 ~~~

@@ -71,7 +71,7 @@ npx eslint .
 ### Run the app
 
 ~~~
-npm run test
+npm run start
 ~~~
 
 

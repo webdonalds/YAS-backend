@@ -23,6 +23,9 @@ const sequelize = new Sequelize(
     {
         host: config.database.databaseEndpoint,
         dialect: 'mariadb',
+        dialectOptions: {
+            timezone: 'Etc/GMT+9',
+        },
         define: {
             charset: 'utf8',
             collate: 'utf8_general_ci',
@@ -30,26 +33,28 @@ const sequelize = new Sequelize(
         logging: msg => {
             const date = new Date();
             logStream.write(`[${date.toISOString()}] - ${msg} \r\n`);
-        }
-    },
+        },
+    }
 );
 
 // initialize models
-const models = [User, Video, Tag, Like, Token, VideoHasTag, Follow];
+const models = [User, Video, Tag, Like, Token, VideoHasTag];
 models.forEach(model => model.initialize(sequelize));
+
 
 // User - Video Association
 User.hasMany(Video, { foreignKey: 'userId' });
 Video.belongsTo(User, { foreignKey: 'userId' });
 
+
 // User - Token Association
 User.hasMany(Token, { foreignKey: 'userId' });
 
+
 // Follow Association
-User.hasMany(Follow, {as: 'Followee', foreignKey: 'followeeId'});
-Follow.belongsTo(User, {as: 'Followee', foreignKey: 'followeeId'});
-User.hasMany(Follow, {as: 'Follower', foreignKey: 'followerId'});
-Follow.belongsTo(User, {as: 'Follower', foreignKey: 'followerId'});
+User.belongsToMany(User, { as: 'Follower', through: 'follows', foreignKey: 'followerId' });
+User.belongsToMany(User, { as: 'Followee', through: 'follows', foreignKey: 'followeeId' });
+
 
 // Like Association
 User.hasMany(Like, { foreignKey: 'userId' });

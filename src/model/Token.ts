@@ -5,7 +5,7 @@ class Token extends Model {
     public yasToken!: string;
     public yasSecretKey!: string;
 
-    public static initialize(sequelize: Sequelize) {
+    public static initialize(sequelize: Sequelize): void {
         this.init(
             {
                 userId: {

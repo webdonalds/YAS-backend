@@ -23,13 +23,13 @@ class GoogleService {
         });
     }
 
-    async getTokens(code) {
+    async getTokens(code: string) {
         const client = this.getAuthClient();
         const { tokens } = await client.getToken(code);
         return tokens;
     }
 
-    async getUserInfo(accessToken) {
+    async getUserInfo(accessToken: string) {
         const client = this.getAuthClient();
         client.setCredentials({
             access_token: accessToken

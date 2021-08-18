@@ -6,19 +6,21 @@ import { Op } from 'sequelize';
 
 import middleware from '../middleware';
 import { errorSend } from '../../error/errorUtil';
+import { VideoListResponse } from '../../model/dto/Video';
 
 const router = express.Router();
 
 // get video
-router.get('/video/:videoId', async (request: express.Request, response: express.Response) => {
-    const videoId = Number(request.params.videoId);
-    if(isNaN(videoId)) {
+// id: db id, videoId: youtube video id
+router.get('/video/:id', async (request: express.Request, response: express.Response) => {
+    const id = Number(request.params.id);
+    if(isNaN(id)) {
         errorSend(response, 'invalid_id', null);
         return;
     }
 
     try {
-        const video = await Video.findByPk(videoId, {
+        const video = await Video.findByPk(id, {
             include: [{
                 model: Tag,
             }, {
@@ -28,7 +30,8 @@ router.get('/video/:videoId', async (request: express.Request, response: express
         if(video == null) {
             throw 'not_found';
         }
-        response.json(video);
+
+        response.json(video.toVideoResponse());
     } catch (e) {
         errorSend(response, 'not_found', null);
     }
@@ -50,56 +53,41 @@ router.get('/user-videos/:userId', async (request: express.Request, response: ex
 
     const lastPostId = parseInt(request.query.pageToken as string);
 
-    let result;
+    let videos: Video[];
   
     try {
-        if(isNaN(lastPostId)){
-            result = await Video.findAll({
-                where: {
-                    userId: ownerId
-                },
-                order: [
-                    ['id', 'DESC']
-                ],
-                limit: USER_VIDEO_LIMIT,
-                include: [{
-                    model: Tag
-                },{
-                    model: User
-                }]
-            });
-        } else{
-            result = await Video.findAll({
-                where:{
-                    id: { [Op.lt]: lastPostId },
-                    userId: ownerId
-                },
-                order: [
-                    ['id', 'DESC']
-                ],
-                limit: USER_VIDEO_LIMIT,
-                include: [{
-                    model: Tag,
-                },{
-                    model: User
-                }]
-            });
-        }
+        const whereOpt = isNaN(lastPostId) ? {
+            userId: ownerId
+        } : {
+            id: { [Op.lt]: lastPostId },
+            userId: ownerId
+        };
+
+        videos = await Video.findAll({
+            where: whereOpt,
+            order: [
+                ['id', 'DESC']
+            ],
+            limit: USER_VIDEO_LIMIT,
+            include: [{
+                model: Tag,
+            },{
+                model: User
+            }]
+        });
     } catch(e) {
         errorSend(response, 'not_found', null);
         return;
     }
 
-    const userVideos = [];
 
-    for(let i=0;i<result.length;i++){
-        userVideos.push(result[i].dataValues);
-    }
+    const videoListResponse: VideoListResponse = {
+        videoList: videos.map((video) => video.toVideoResponse()),
+        pageToken: videos.length > 0 ? videos[videos.length - 1].id : parseInt(request.query.pageToken as string)
+    };
+    
+    response.json(videoListResponse);
 
-    response.json({
-        videoList: userVideos,
-        pageToken: userVideos.length > 0 ? userVideos[userVideos.length - 1].id : parseInt(request.query.pageToken as string)
-    });
     return;
 });
 
@@ -198,7 +186,7 @@ router.put('/video', middleware.validateToken, async (request: express.Request, 
     }
 
     response.json({
-        message: 'success',
+        postId: videoPostId,
     });
     return;
 });
@@ -237,7 +225,7 @@ router.delete('/video', middleware.validateToken, async (request: express.Reques
     }
     
     response.json({
-        message: 'success',
+        postId: videoPostId,
     });
     return;
 });

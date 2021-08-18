@@ -25,6 +25,6 @@ app.use(index);
 
 
 const port = 3000;
-const server = app.listen(port, function () {
+app.listen(port, function () {
     console.log('App is listening at port %d', port);
 });

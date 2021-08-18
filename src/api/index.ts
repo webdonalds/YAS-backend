@@ -4,7 +4,7 @@ import auth from './v1/auth';
 import user from './v1/user';
 import contents from './v1/contents';
 import like from './v1/like';
-import post from './v1/post';
+import post from './v1/video';
 import logoffedPostList from './v1/logoffedPostList';
 import follow from './v1/follow';
 
